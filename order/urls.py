@@ -1,8 +1,9 @@
+# order/urls.py
 from django.urls import path
+from . import views
 
 app_name = 'order'
 
 urlpatterns = [
-    # هنا تقدر تضيف مسارات الطلبات مثل:
-    # path('checkout/', views.checkout, name='checkout'),
+    path('checkout/', views.process_order, name='checkout'),  # ✅ هذا الجديد
 ]

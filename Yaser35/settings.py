@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'store',
     'order',
     'account',
+    'cart',  # ✅ تمت إضافة تطبيق السلة
 ]
 
 # الميدلوير (وسيطات المعالجة)

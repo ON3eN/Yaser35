@@ -1,5 +1,3 @@
-# Yaser35/urls.py
-
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -17,6 +15,7 @@ urlpatterns = [
     # روابط التطبيقات الفرعية
     path('order/', include('order.urls')),     # الطلبات
     path('account/', include('account.urls')), # الحسابات (تسجيل - دخول - خروج)
+    path('cart/', include('cart.urls')),       # السلة
 ]
 
 # دعم عرض ملفات الوسائط (media) أثناء التطوير

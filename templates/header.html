@@ -1,0 +1,143 @@
+<header style="
+  background: linear-gradient(to right, #c2e9fb, #e0f7ff);
+  padding: 1rem 2rem;
+  font-family: 'Cairo', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid #d3eaf7;
+  position: relative;
+  z-index: 1000;
+">
+
+  <!-- زر الهمبرغر يمين -->
+  <div style="position: relative;">
+    <div onclick="toggleNavMenu()" style="cursor: pointer;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <rect y="4" width="24" height="2" fill="#333"/>
+        <rect y="11" width="18" height="2" fill="#333"/>
+        <rect y="18" width="12" height="2" fill="#333"/>
+      </svg>
+    </div>
+    <div id="navMenu" style="
+      display: none;
+      position: absolute;
+      top: 45px;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      min-width: 160px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 999;
+    ">
+      <a href="/" style="display: block; padding: 0.7rem 1rem; text-decoration: none; color: #0077b6;">🏠 الرئيسية</a>
+      <a href="#products" style="display: block; padding: 0.7rem 1rem; text-decoration: none; color: #0077b6;">🛍 المنتجات</a>
+      <a href="#contact" style="display: block; padding: 0.7rem 1rem; text-decoration: none; color: #0077b6;">📞 تواصل معنا</a>
+    </div>
+  </div>
+
+  <!-- شعار شقف في الوسط مع تأثير -->
+  <a href="/" style="
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #0077b6;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease, color 0.2s ease;
+  " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+    🛍️ شقف
+  </a>
+
+  <!-- الحساب يسار -->
+  <div style="display: flex; align-items: center; gap: 1rem; position: relative;">
+    {% if user.is_authenticated %}
+      <div style="position: relative;">
+        <div class="avatar" onclick="toggleUserMenu()" style="
+          width: 40px;
+          height: 40px;
+          background-color: #2e6d82;
+          color: white;
+          font-weight: bold;
+          text-align: center;
+          line-height: 40px;
+          border-radius: 50%;
+          cursor: pointer;
+        ">
+          {{ user.username|slice:":1"|upper }}
+        </div>
+        <div id="userMenu" style="
+          display: none;
+          position: absolute;
+          top: 50px;
+          left: 0;
+          background: white;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          min-width: 160px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          z-index: 999;
+        ">
+          <a href="#" style="display: block; padding: 0.7rem 1rem; text-decoration: none; color: #1565c0;">🛠 إعدادات الحساب</a>
+          <a href="#" style="display: block; padding: 0.7rem 1rem; text-decoration: none; color: #1565c0;">💳 إعدادات الدفع</a>
+          <form method="post" action="{% url 'account:logout' %}" style="margin: 0;">
+            {% csrf_token %}
+            <button type="submit" style="
+              width: 100%;
+              text-align: right;
+              background: none;
+              border: none;
+              padding: 0.7rem 1rem;
+              color: #c62828;
+              font-family: 'Cairo', sans-serif;
+              font-size: 1rem;
+              cursor: pointer;
+            ">
+              🚪 تسجيل الخروج
+            </button>
+          </form>
+        </div>
+      </div>
+    {% else %}
+      <a href="{% url 'account:login' %}" style="
+        background-color: #2e6d82;
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.9rem;
+      ">
+        👤 تسجيل الدخول
+      </a>
+    {% endif %}
+  </div>
+</header>
+
+<!-- JavaScript للقوائم -->
+<script>
+  function toggleUserMenu() {
+    const menu = document.getElementById("userMenu");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+  }
+
+  function toggleNavMenu() {
+    const menu = document.getElementById("navMenu");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+  }
+
+  document.addEventListener("click", function(e) {
+    if (!e.target.closest("#userMenu") && !e.target.closest(".avatar")) {
+      const menu = document.getElementById("userMenu");
+      if (menu) menu.style.display = "none";
+    }
+    if (!e.target.closest("#navMenu") && !e.target.closest("svg")) {
+      const navMenu = document.getElementById("navMenu");
+      if (navMenu) navMenu.style.display = "none";
+    }
+  });
+</script>

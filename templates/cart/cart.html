@@ -55,6 +55,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     .qty-btn {
@@ -103,6 +104,7 @@
       display: flex;
       gap: 1rem;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     .coupon-section input[type="text"] {
@@ -158,6 +160,49 @@
       color: #888;
       padding: 3rem 1rem;
     }
+
+    /* 🎯 تحسين الاستجابة للشاشات الصغيرة */
+    @media (max-width: 768px) {
+      table thead {
+        display: none;
+      }
+
+      table, tbody, tr, td {
+        display: block;
+        width: 100%;
+      }
+
+      tr {
+        margin-bottom: 1.5rem;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 1rem;
+        background-color: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      }
+
+      td {
+        text-align: right;
+        padding: 0.5rem 0;
+        position: relative;
+      }
+
+      td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #005b8f;
+        display: block;
+        margin-bottom: 0.3rem;
+      }
+
+      .qty-controls {
+        justify-content: flex-start;
+      }
+
+      .total {
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -181,8 +226,8 @@
         <tbody>
           {% for item in cart_items %}
           <tr>
-            <td>{{ item.name }}</td>
-            <td>
+            <td data-label="الاسم">{{ item.name }}</td>
+            <td data-label="الكمية">
               <div class="qty-controls">
                 <form method="post" action="{% url 'cart:decrease_quantity' item.id %}">
                   {% csrf_token %}
@@ -195,9 +240,9 @@
                 </form>
               </div>
             </td>
-            <td>{{ item.price }} ريال</td>
-            <td>{{ item.subtotal }} ريال</td>
-            <td>
+            <td data-label="السعر">{{ item.price }} ريال</td>
+            <td data-label="المجموع">{{ item.subtotal }} ريال</td>
+            <td data-label="حذف">
               <form method="post" action="{% url 'cart:remove_from_cart' item.id %}">
                 {% csrf_token %}
                 <button type="submit" class="delete-btn">×</button>

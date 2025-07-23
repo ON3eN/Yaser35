@@ -12,12 +12,13 @@ urlpatterns = [
     # الصفحة الرئيسية
     path('', home, name='home'),
 
-    # روابط التطبيقات الفرعية
-    path('order/', include('order.urls')),     # الطلبات
-    path('account/', include('account.urls')), # الحسابات (تسجيل - دخول - خروج)
-    path('cart/', include('cart.urls')),       # السلة
+    # روابط التطبيقات
+    path('store/', include('store.urls', namespace='store')),  # المنتجات
+    path('order/', include('order.urls')),                     # الطلبات
+    path('account/', include('account.urls')),                 # الحسابات
+    path('cart/', include('cart.urls')),                       # السلة
 ]
 
-# دعم عرض ملفات الوسائط (media) أثناء التطوير
+# دعم عرض ملفات الوسائط أثناء التطوير
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

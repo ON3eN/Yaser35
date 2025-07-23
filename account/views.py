@@ -12,10 +12,8 @@ def login_view(request):
         username_or_email = request.POST.get('username')
         password = request.POST.get('password')
 
-        # محاولة تسجيل الدخول باستخدام اسم المستخدم
         user = authenticate(request, username=username_or_email, password=password)
 
-        # إذا لم ينجح، نحاول بالبريد الإلكتروني
         if user is None:
             try:
                 user_obj = User.objects.get(email=username_or_email)
@@ -25,10 +23,10 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            messages.success(request, f"مرحباً بك يا {user.username}!")
-            return redirect('home')  # تحويل للصفحة الرئيسية
+            messages.success(request, f"مرحباً بك يا {user.first_name or user.username}!")
+            return redirect('home')
         else:
-            messages.error(request, "اسم المستخدم أو كلمة المرور غير صحيحة")
+            messages.error(request, "اسم المستخدم أو كلمة المرور غير صحيحة.")
             return redirect('account:login')
 
     return render(request, 'account/login.html')
@@ -36,35 +34,35 @@ def login_view(request):
 
 def register_view(request):
     """
-    معالجة تسجيل حساب جديد من قبل العميل.
+    معالجة إنشاء حساب جديد.
     """
     if request.method == 'POST':
         username = request.POST.get('username')
         email = request.POST.get('email')
-        phone = request.POST.get('phone')
+        country_code = request.POST.get('country_code', '+966')
+        phone_number = request.POST.get('phone')
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
 
         if password != confirm_password:
-            messages.error(request, "كلمتا المرور غير متطابقتين")
+            messages.error(request, "كلمتا المرور غير متطابقتين.")
             return redirect('account:register')
 
         if User.objects.filter(username=username).exists():
-            messages.error(request, "اسم المستخدم مستخدم بالفعل")
+            messages.error(request, "اسم المستخدم مستخدم بالفعل.")
             return redirect('account:register')
 
         if User.objects.filter(email=email).exists():
-            messages.error(request, "البريد الإلكتروني مستخدم بالفعل")
+            messages.error(request, "البريد الإلكتروني مستخدم بالفعل.")
             return redirect('account:register')
 
         user = User.objects.create_user(username=username, email=email, password=password)
         user.save()
 
-        # إنشاء ملف شخصي مرتبط بالمستخدم (إذا كنت تستخدم موديل Profile)
         try:
-            Profile.objects.create(user=user, phone=phone)
+            Profile.objects.create(user=user, phone=f"{country_code}{phone_number}")
         except:
-            pass  # تجاهل إذا لم يوجد موديل Profile
+            pass
 
         messages.success(request, "تم إنشاء الحساب بنجاح، يمكنك تسجيل الدخول الآن.")
         return redirect('account:login')

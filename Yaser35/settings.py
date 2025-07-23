@@ -22,10 +22,14 @@ INSTALLED_APPS = [
     'store',
     'order',
     'account',
-    'cart',  # ✅ تمت إضافة تطبيق السلة
+    'cart',
+
+    # Cloudinary
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
-# الميدلوير (وسيطات المعالجة)
+# وسائط المعالجة (Middleware)
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -39,11 +43,11 @@ MIDDLEWARE = [
 # ملف URL الرئيسي
 ROOT_URLCONF = 'Yaser35.urls'
 
-# إعدادات القوالب (Templates)
+# إعدادات القوالب
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # لدعم مجلد templates عام
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -56,7 +60,7 @@ TEMPLATES = [
     },
 ]
 
-# إعداد تطبيق WSGI
+# إعدادات WSGI
 WSGI_APPLICATION = 'Yaser35.wsgi.application'
 
 # قاعدة البيانات
@@ -67,39 +71,35 @@ DATABASES = {
     }
 }
 
-# تحقق من كلمات المرور
+# التحقق من كلمات المرور
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# اللغة والتوقيت
+# اللغة والمنطقة الزمنية
 LANGUAGE_CODE = 'ar-sa'
 TIME_ZONE = 'Asia/Riyadh'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# الملفات الثابتة (Static Files)
+# الملفات الثابتة
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# ملفات الوسائط (Media Files)
+# الملفات الإعلامية (Media) باستخدام Cloudinary
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dehrixr6p',
+    'API_KEY': '459857656957381',
+    'API_SECRET': 'UX16iTpfmfXdqaMCp8i4lrLE0Ro'
+}
 
 # نوع المفتاح الأساسي الافتراضي
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

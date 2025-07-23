@@ -71,7 +71,7 @@
     </div>
     <div id="navMenu" class="popup-menu" style="right: 0;">
       <a href="/">🏠 الرئيسية</a>
-      <a href="#products">🛍 المنتجات</a>
+      <a href="{% url 'store:products' %}">🛍 المنتجات</a>
       <a href="/cart/">🛒 سلة التسوق</a>
       <a href="#contact">📞 تواصل معنا</a>
     </div>
@@ -130,7 +130,7 @@
         font-size: 0.9rem;
         transition: transform 0.2s;
       " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-        👤 تسجيل الدخول
+         تسجيل الدخول
       </a>
     {% endif %}
   </div>

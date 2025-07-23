@@ -108,18 +108,41 @@
       background-color: #003d63;
     }
 
-    .toast {
+    .toast-container {
       position: fixed;
       bottom: 20px;
       right: 20px;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: flex-end;
+      gap: 0.8rem;
+      z-index: 10000;
+    }
+
+    .toast {
       background: #28a745;
       color: white;
       padding: 1rem 1.5rem;
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      display: none;
-      z-index: 10000;
       font-family: 'Cairo', sans-serif;
+      min-width: 260px;
+      opacity: 0;
+      transform: translateX(100%);
+      animation: slideIn 0.4s forwards;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .toast.fade-out {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+
+    @keyframes slideIn {
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
     }
   </style>
 </head>
@@ -157,7 +180,7 @@
     <a href="{% url 'store:products' %}" class="more-btn">عرض المزيد من المنتجات</a>
   </div>
 
-  <div class="toast" id="toast">✅ تمت إضافة المنتج للسلة</div>
+  <div class="toast-container" id="toast-container"></div>
 
   {% include 'footer.html' %}
 
@@ -174,12 +197,20 @@
     }
 
     function showToast(message) {
-      const toast = document.getElementById('toast');
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
       toast.textContent = message;
-      toast.style.display = 'block';
+
+      container.appendChild(toast);
+
       setTimeout(() => {
-        toast.style.display = 'none';
-      }, 3000);
+        toast.classList.add('fade-out');
+      }, 4700); // بدء التلاشي بعد 4.7 ثانية
+
+      setTimeout(() => {
+        toast.remove();
+      }, 5300); // الحذف بعد انتهاء التدرج
     }
 
     document.querySelectorAll('.add-to-cart').forEach(button => {
@@ -196,7 +227,7 @@
         })
         .then(res => res.json())
         .then(data => {
-          showToast(data.message);
+          showToast(`✅ ${data.message}`);
         })
         .catch(err => console.error("خطأ:", err));
       });

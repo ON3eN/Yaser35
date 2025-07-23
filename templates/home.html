@@ -5,7 +5,7 @@
   <title>شقف - المتجر الإلكتروني</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <!-- استدعاء خط كايرو -->
+  <!-- خط كايرو -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
 
   <style>
@@ -91,8 +91,6 @@
       border-radius: 8px;
       cursor: pointer;
       transition: background 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
     }
 
     .add-to-cart:hover {
@@ -104,6 +102,19 @@
       font-size: 1.2rem;
       color: #888;
       padding: 2rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 10000;
     }
   </style>
 </head>
@@ -135,7 +146,7 @@
         <h3>{{ product.name }}</h3>
         <p>{{ product.description }}</p>
         <p class="product-price">{{ product.price }} ريال</p>
-        <a href="{% url 'cart:add_to_cart' product.id %}" class="add-to-cart">أضف إلى السلة 🛒</a>
+        <button class="add-to-cart" data-url="{% url 'cart:ajax_add_to_cart' product.id %}">أضف إلى السلة 🛒</button>
       </div>
     {% empty %}
       <div class="no-products">
@@ -144,10 +155,55 @@
     {% endfor %}
   </section>
 
+  <div class="toast" id="toast">✅ تمت إضافة المنتج للسلة</div>
+
   {% include 'footer.html' %}
 
   <script>
-    console.log("مرحباً بك في شقف!");
+    // جلب CSRF token من الكوكيز
+    function getCSRFToken() {
+      const name = 'csrftoken';
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + '=')) {
+          return decodeURIComponent(cookie.substring(name.length + 1));
+        }
+      }
+      return '';
+    }
+
+    // إشعار مؤقت
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.getAttribute('data-url');
+
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': getCSRFToken(),
+            'Content-Type': 'application/json'
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          showToast(data.message);
+        })
+        .catch(error => {
+          console.error("خطأ في الإضافة:", error);
+        });
+      });
+    });
   </script>
 </body>
 </html>

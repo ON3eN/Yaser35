@@ -1,5 +1,5 @@
+<!-- header.html -->
 <style>
-  /* القوائم المنبثقة */
   .popup-menu {
     display: none;
     position: absolute;
@@ -10,6 +10,7 @@
     min-width: 200px;
     overflow: hidden;
     animation: fadeIn 0.25s ease;
+    z-index: 1001;
   }
 
   @keyframes fadeIn {
@@ -59,7 +60,6 @@
   position: relative;
   z-index: 1000;
 ">
-
   <!-- قائمة الهمبرغر -->
   <div style="position: relative;">
     <div onclick="toggleNavMenu()" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">

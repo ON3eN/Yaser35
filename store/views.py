@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Product  # استيراد موديل المنتجات
 
+# الصفحة الرئيسية
 def home(request):
     # جلب المنتجات المتوفرة فقط، مرتبة من الأحدث
     products = Product.objects.filter(available=True).order_by('-created_at')
@@ -12,15 +13,16 @@ def home(request):
     return render(request, 'home.html', {
         'products': products,
         'username': username,
-        'request': request  # ضروري لتمييز الصفحة الرئيسية في القالب
+        'request': request  # للتمييز داخل القالب
     })
 
+# صفحة المنتجات المفصولة
 def products_page(request):
     # جلب المنتجات المتوفرة فقط، مرتبة من الأحدث
     products = Product.objects.filter(available=True).order_by('-created_at')
 
-    # تمرير المنتجات فقط لقالب المنتجات
+    # تمرير البيانات لقالب المنتجات
     return render(request, 'products.html', {
         'products': products,
-        'request': request  # في حال احتجت تمييز التصميم أو إدراج إضافات
+        'request': request  # للتمييز أو استخدام path داخل القالب
     })

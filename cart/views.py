@@ -1,34 +1,129 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from store.models import Product
+from django.contrib import messages
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+
 
 # عرض السلة
 def cart_view(request):
-    # جلب العناصر من الجلسة أو قائمة فاضية
     cart_items = request.session.get('cart_items', [])
-    
-    # حساب المجموع
-    total = sum(item['price'] for item in cart_items)
+    discount = request.session.get('discount', 0)
 
-    return render(request, 'cart.html', {
+    for item in cart_items:
+        item['quantity'] = item.get('quantity', 1)
+        item['subtotal'] = round(item['price'] * item['quantity'], 2)
+
+    total = sum(item['subtotal'] for item in cart_items)
+    discounted_total = round(total * (1 - discount), 2)
+
+    return render(request, 'cart/cart.html', {
         'cart_items': cart_items,
-        'total': total,
+        'total': round(total, 2),
+        'discount': discount,
+        'discounted_total': discounted_total if discount else None,
     })
 
-# إضافة منتج إلى السلة
+
+# إضافة منتج إلى السلة (عادي)
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-
-    # بناء عنصر السلة
-    item = {
-        'id': product.id,
-        'name': product.name,
-        'price': float(product.price),  # نحوله إلى float لأنه Decimal
-    }
-
-    # جلب السلة من الجلسة أو تهيئتها
     cart_items = request.session.get('cart_items', [])
-    cart_items.append(item)
+
+    for item in cart_items:
+        if item['id'] == product.id:
+            item['quantity'] += 1
+            break
+    else:
+        cart_items.append({
+            'id': product.id,
+            'name': product.name,
+            'price': float(product.price),
+            'quantity': 1,
+        })
+
     request.session['cart_items'] = cart_items
+    messages.success(request, f"✅ تمت إضافة {product.name} إلى السلة 🛒")
+    return redirect(request.META.get('HTTP_REFERER', 'cart:cart'))
 
-    return redirect('cart:cart')  # ✅ هذا هو الصحيح
 
+# ✅ إضافة منتج باستخدام Ajax (لا يعيد تحميل الصفحة)
+@require_POST
+def ajax_add_to_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart_items = request.session.get('cart_items', [])
+
+    for item in cart_items:
+        if item['id'] == product.id:
+            item['quantity'] += 1
+            break
+    else:
+        cart_items.append({
+            'id': product.id,
+            'name': product.name,
+            'price': float(product.price),
+            'quantity': 1,
+        })
+
+    request.session['cart_items'] = cart_items
+    return JsonResponse({
+        'message': f"✅ تمت إضافة {product.name} إلى السلة 🛒",
+        'cartCount': sum(item['quantity'] for item in cart_items)
+    })
+
+
+# زيادة الكمية
+def increase_quantity(request, product_id):
+    cart_items = request.session.get('cart_items', [])
+    for item in cart_items:
+        if item['id'] == product_id:
+            item['quantity'] += 1
+            break
+    request.session['cart_items'] = cart_items
+    return redirect('cart:cart')
+
+
+# تقليل الكمية
+def decrease_quantity(request, product_id):
+    cart_items = request.session.get('cart_items', [])
+    for item in cart_items:
+        if item['id'] == product_id:
+            if item['quantity'] > 1:
+                item['quantity'] -= 1
+            else:
+                cart_items.remove(item)
+            break
+    request.session['cart_items'] = cart_items
+    return redirect('cart:cart')
+
+
+# إزالة منتج من السلة
+def remove_from_cart(request, product_id):
+    cart_items = request.session.get('cart_items', [])
+    cart_items = [item for item in cart_items if item['id'] != product_id]
+    request.session['cart_items'] = cart_items
+    messages.info(request, "🗑️ تمت إزالة المنتج من السلة")
+    return redirect('cart:cart')
+
+
+# تفريغ السلة
+def clear_cart(request):
+    request.session['cart_items'] = []
+    request.session['discount'] = 0
+    messages.info(request, "🧺 تم تفريغ السلة بنجاح")
+    return redirect('cart:cart')
+
+
+# تطبيق كود الخصم
+@require_POST
+def apply_coupon(request):
+    code = request.POST.get('coupon_code', '').strip().lower()
+
+    if code == 'خصم10':
+        request.session['discount'] = 0.10
+        messages.success(request, "🎉 تم تطبيق كود الخصم 10%")
+    else:
+        request.session['discount'] = 0
+        messages.warning(request, "❌ كود الخصم غير صالح")
+
+    return redirect('cart:cart')

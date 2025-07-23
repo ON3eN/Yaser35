@@ -140,7 +140,6 @@
       padding: 3rem 1rem;
     }
 
-    /* التنبيه (Modal) */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -283,7 +282,7 @@
     <div class="actions">
       <a href="/" class="btn">متابعة التسوق</a>
       {% if user.is_authenticated %}
-        <a href="{% url 'order:process_order' %}" class="btn">إتمام الشراء</a>
+        <a href="{% url 'order:checkout' %}" class="btn">إتمام الشراء</a>
       {% else %}
         <button class="btn" onclick="showLoginModal()">إتمام الشراء</button>
       {% endif %}

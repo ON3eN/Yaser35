@@ -1,6 +1,6 @@
 from pathlib import Path
 import os
-import cloudinary  # ✅ ضروري للتهيئة اليدوية
+import cloudinary  # ضروري للتهيئة اليدوية
 
 # المسار الأساسي للمشروع
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,7 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # التطبيقات الخاصة بالمشروع
+    # تطبيقات المشروع
     'store',
     'order',
     'account',
@@ -41,8 +41,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# ملف URL الرئيسي
 ROOT_URLCONF = 'Yaser35.urls'
 
+# إعدادات القوالب
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -61,6 +63,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Yaser35.wsgi.application'
 
+# قاعدة البيانات
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -68,6 +71,7 @@ DATABASES = {
     }
 }
 
+# تحقق من كلمات المرور
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -75,43 +79,43 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# اللغة والمنطقة الزمنية
 LANGUAGE_CODE = 'ar-sa'
 TIME_ZONE = 'Asia/Riyadh'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+# الملفات الثابتة
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Cloudinary لتخزين الصور
 MEDIA_URL = '/media/'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dehrixr6p',
     'API_KEY': '459857656957381',
-    'API_SECRET': 'UX16iTpfmfXdqaMCp8i4lrLE0Ro'
+    'API_SECRET': 'UX16iTpfmfXdqaMCp8i4lrLE0Ro',
 }
 
+# تهيئة Cloudinary يدويًا (اختياري ولكن مهم لبعض العمليات)
 cloudinary.config(
     cloud_name='dehrixr6p',
     api_key='459857656957381',
-    api_secret='UX16iTpfmfXdqaMCp8i4lrLE0Ro'
+    api_secret='UX16iTpfmfXdqaMCp8i4lrLE0Ro',
 )
 
-# ✅ إعدادات الإيميل لإرسال الرسائل من Gmail
+# إعدادات الإيميل (Gmail SMTP)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'goto6946@gmail.com'  # بريدك
-EMAIL_HOST_PASSWORD = 'vbyh gyec rfdo jnae'  # كلمة مرور التطبيق أو كلمة المرور العادية (لو ما عندك تحقق بخطوتين)
-
-# يمكنك استخدام هذا للإرسال مثل:
-# send_mail('العنوان', 'النص', EMAIL_HOST_USER, ['to@example.com'])
-
+EMAIL_HOST_USER = 'goto6946@gmail.com'
+EMAIL_HOST_PASSWORD = 'vbyh gyec rfdo jnae'  # كلمة مرور تطبيق خاصة من Google
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# المفتاح الافتراضي
+# نوع المفتاح الأساسي الافتراضي
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

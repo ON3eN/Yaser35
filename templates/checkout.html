@@ -1,0 +1,169 @@
+<!-- templates/checkout.html -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>إتمام الطلب - شقف</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(to bottom right, #d8f0ff, #ffffff);
+      color: #1e1e1e;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 3rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      text-align: center;
+      color: #0077b6;
+      margin-bottom: 2rem;
+    }
+
+    form label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    form input, form select {
+      width: 100%;
+      padding: 0.8rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    #map {
+      width: 100%;
+      height: 300px;
+      margin-top: 1rem;
+      border-radius: 12px;
+    }
+
+    .payment-methods {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .payment-methods label {
+      background: #f5f5f5;
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .payment-methods input[type="radio"] {
+      display: none;
+    }
+
+    .payment-methods input[type="radio"]:checked + label {
+      background: #0077b6;
+      color: white;
+      border: 2px solid #005b8f;
+    }
+
+    .submit-btn {
+      margin-top: 2rem;
+      background: #0077b6;
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+    }
+
+    .submit-btn:hover {
+      background: #005b8f;
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'header.html' %}
+
+  <div class="container">
+    <h2>إتمام الطلب</h2>
+    <form method="post">
+      {% csrf_token %}
+      <label>الاسم الكامل</label>
+      <input type="text" name="full_name" required>
+
+      <label>رقم الجوال</label>
+      <input type="tel" name="phone" required>
+
+      <label>عنوان التوصيل</label>
+      <input type="text" name="address" required>
+
+      <label>حدد موقعك على الخريطة</label>
+      <div id="map"></div>
+
+      <label>طريقة الدفع</label>
+      <div class="payment-methods">
+        <input type="radio" name="payment" value="apple_pay" id="apple">
+        <label for="apple"> Apple Pay</label>
+
+        <input type="radio" name="payment" value="visa" id="visa">
+        <label for="visa">Visa 💳</label>
+
+        <input type="radio" name="payment" value="mastercard" id="mastercard">
+        <label for="mastercard">MasterCard 💳</label>
+
+        <input type="radio" name="payment" value="mada" id="mada">
+        <label for="mada">مدى 🏦</label>
+
+        <input type="radio" name="payment" value="paypal" id="paypal">
+        <label for="paypal">PayPal 🧾</label>
+      </div>
+
+      <button type="submit" class="submit-btn">تأكيد الطلب</button>
+    </form>
+  </div>
+
+  {% include 'footer.html' %}
+
+  <script>
+    let map;
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 24.7136, lng: 46.6753 },
+        zoom: 12,
+      });
+
+      const marker = new google.maps.Marker({
+        position: map.getCenter(),
+        map: map,
+        draggable: true
+      });
+
+      marker.addListener('dragend', function () {
+        const lat = marker.getPosition().lat();
+        const lng = marker.getPosition().lng();
+        console.log('الموقع المحدد:', lat, lng);
+        // بإمكانك إرسال الإحداثيات داخل نموذج مخفي هنا
+      });
+    }
+  </script>
+
+</body>
+</html>

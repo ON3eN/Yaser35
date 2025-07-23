@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import cloudinary  # ✅ ضروري للتهيئة اليدوية
 
 # المسار الأساسي للمشروع
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +30,7 @@ INSTALLED_APPS = [
     'cloudinary_storage',
 ]
 
-# وسائط المعالجة (Middleware)
+# وسائط المعالجة
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -40,10 +41,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# ملف URL الرئيسي
 ROOT_URLCONF = 'Yaser35.urls'
 
-# إعدادات القوالب
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -60,10 +59,8 @@ TEMPLATES = [
     },
 ]
 
-# إعدادات WSGI
 WSGI_APPLICATION = 'Yaser35.wsgi.application'
 
-# قاعدة البيانات
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -71,7 +68,6 @@ DATABASES = {
     }
 }
 
-# التحقق من كلمات المرور
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -79,19 +75,16 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# اللغة والمنطقة الزمنية
 LANGUAGE_CODE = 'ar-sa'
 TIME_ZONE = 'Asia/Riyadh'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# الملفات الثابتة
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# الملفات الإعلامية (Media) باستخدام Cloudinary
 MEDIA_URL = '/media/'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
@@ -101,5 +94,24 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': 'UX16iTpfmfXdqaMCp8i4lrLE0Ro'
 }
 
-# نوع المفتاح الأساسي الافتراضي
+cloudinary.config(
+    cloud_name='dehrixr6p',
+    api_key='459857656957381',
+    api_secret='UX16iTpfmfXdqaMCp8i4lrLE0Ro'
+)
+
+# ✅ إعدادات الإيميل لإرسال الرسائل من Gmail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'goto6946@gmail.com'  # بريدك
+EMAIL_HOST_PASSWORD = 'vbyh gyec rfdo jnae'  # كلمة مرور التطبيق أو كلمة المرور العادية (لو ما عندك تحقق بخطوتين)
+
+# يمكنك استخدام هذا للإرسال مثل:
+# send_mail('العنوان', 'النص', EMAIL_HOST_USER, ['to@example.com'])
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# المفتاح الافتراضي
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -1,6 +1,6 @@
 from pathlib import Path
 import cloudinary
-from decouple import config, Csv  # لقراءة القيم من env
+from decouple import config, Csv
 import os
 
 # المسار الأساسي
@@ -9,9 +9,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # الأمان
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = []  # يمكن تعديلها حسب النشر
 
-# التطبيقات
+# السماح بالنطاقات
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',') + ['yaser35.onrender.com']
+
+# التطبيقات المثبتة
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -19,15 +21,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # تطبيقات المشروع
     'store',
     'order',
     'account',
     'cart',
+
+    # Cloudinary
     'cloudinary',
     'cloudinary_storage',
 ]
 
-# الوسيطات
+# الميدلوير
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -40,7 +46,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Yaser35.urls'
 
-# القوالب
+# إعدادات القوالب
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -99,10 +105,11 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# الوسائط
+# الملفات الإعلامية
 MEDIA_URL = '/media/'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+# إعدادات Cloudinary
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': config('CLOUDINARY_API_KEY'),
@@ -115,7 +122,7 @@ cloudinary.config(
     api_secret=config('CLOUDINARY_API_SECRET'),
 )
 
-# البريد
+# إعدادات البريد
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587

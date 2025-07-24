@@ -1,16 +1,17 @@
 from pathlib import Path
+import cloudinary
+from decouple import config, Csv  # لقراءة القيم من env
 import os
-import cloudinary  # ضروري للتهيئة اليدوية
 
-# المسار الأساسي للمشروع
+# المسار الأساسي
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # الأمان
-SECRET_KEY = 'django-insecure-m@4=mmn-d%#vgtpw@lkeg%)m40l0awa8v223)vj_3k)r($+i)4'
-DEBUG = True
-ALLOWED_HOSTS = []
+SECRET_KEY = config('SECRET_KEY')
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = []  # يمكن تعديلها حسب النشر
 
-# التطبيقات المثبتة
+# التطبيقات
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -18,19 +19,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # تطبيقات المشروع
     'store',
     'order',
     'account',
     'cart',
-
-    # Cloudinary
     'cloudinary',
     'cloudinary_storage',
 ]
 
-# وسائط المعالجة
+# الوسيطات
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -41,10 +38,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# ملف URL الرئيسي
 ROOT_URLCONF = 'Yaser35.urls'
 
-# إعدادات القوالب
+# القوالب
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -64,14 +60,26 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Yaser35.wsgi.application'
 
 # قاعدة البيانات
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST'),
+            'PORT': config('DB_PORT'),
+        }
+    }
 
-# تحقق من كلمات المرور
+# التحقق من كلمات المرور
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -79,7 +87,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# اللغة والمنطقة الزمنية
+# اللغة والتوقيت
 LANGUAGE_CODE = 'ar-sa'
 TIME_ZONE = 'Asia/Riyadh'
 USE_I18N = True
@@ -91,31 +99,30 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Cloudinary لتخزين الصور
+# الوسائط
 MEDIA_URL = '/media/'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dehrixr6p',
-    'API_KEY': '459857656957381',
-    'API_SECRET': 'UX16iTpfmfXdqaMCp8i4lrLE0Ro',
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
 }
 
-# تهيئة Cloudinary يدويًا (اختياري ولكن مهم لبعض العمليات)
 cloudinary.config(
-    cloud_name='dehrixr6p',
-    api_key='459857656957381',
-    api_secret='UX16iTpfmfXdqaMCp8i4lrLE0Ro',
+    cloud_name=config('CLOUDINARY_CLOUD_NAME'),
+    api_key=config('CLOUDINARY_API_KEY'),
+    api_secret=config('CLOUDINARY_API_SECRET'),
 )
 
-# إعدادات الإيميل (Gmail SMTP)
+# البريد
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'goto6946@gmail.com'
-EMAIL_HOST_PASSWORD = 'vbyh gyec rfdo jnae'  # كلمة مرور تطبيق خاصة من Google
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# نوع المفتاح الأساسي الافتراضي
+# نوع المفتاح الافتراضي
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

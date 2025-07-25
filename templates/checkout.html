@@ -6,7 +6,7 @@
   <title>إتمام الطلب - شقف</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
   <style>
     body {
@@ -52,6 +52,7 @@
       height: 300px;
       margin-top: 1rem;
       border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
 
     .payment-methods {
@@ -117,6 +118,8 @@
 
       <label>حدد موقعك على الخريطة</label>
       <div id="map"></div>
+      <input type="hidden" id="lat" name="latitude">
+      <input type="hidden" id="lng" name="longitude">
 
       <label>طريقة الدفع</label>
       <div class="payment-methods">
@@ -142,27 +145,21 @@
 
   {% include 'footer.html' %}
 
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    let map;
-    function initMap() {
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 24.7136, lng: 46.6753 },
-        zoom: 12,
-      });
+    const map = L.map('map').setView([24.7136, 46.6753], 13);
 
-      const marker = new google.maps.Marker({
-        position: map.getCenter(),
-        map: map,
-        draggable: true
-      });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
 
-      marker.addListener('dragend', function () {
-        const lat = marker.getPosition().lat();
-        const lng = marker.getPosition().lng();
-        console.log('الموقع المحدد:', lat, lng);
-        // بإمكانك إرسال الإحداثيات داخل نموذج مخفي هنا
-      });
-    }
+    const marker = L.marker([24.7136, 46.6753], { draggable: true }).addTo(map);
+
+    marker.on('dragend', function (e) {
+      const latlng = marker.getLatLng();
+      document.getElementById('lat').value = latlng.lat;
+      document.getElementById('lng').value = latlng.lng;
+    });
   </script>
 
 </body>

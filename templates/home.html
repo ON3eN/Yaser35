@@ -144,11 +144,34 @@
         opacity: 1;
       }
     }
+
+    .floating-cart-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: #0077b6;
+      color: white;
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      z-index: 2000;
+      display: none;
+      animation: fadeCartIn 0.4s ease;
+    }
+
+    @keyframes fadeCartIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
 
   {% include 'header.html' %}
+
+  <div class="floating-cart-button" id="floatingCart">
+    🛒 سلة التسوق <span id="cart-count">1</span>
+  </div>
 
   <section class="hero">
     <h2>
@@ -201,16 +224,26 @@
       const toast = document.createElement('div');
       toast.className = 'toast';
       toast.textContent = message;
-
       container.appendChild(toast);
 
-      setTimeout(() => {
-        toast.classList.add('fade-out');
-      }, 4700); // بدء التلاشي بعد 4.7 ثانية
+      setTimeout(() => toast.classList.add('fade-out'), 4700);
+      setTimeout(() => toast.remove(), 5300);
+    }
+
+    function showFloatingCart(count) {
+      const cartBtn = document.getElementById("floatingCart");
+      const cartCount = document.getElementById("cart-count");
+      cartCount.textContent = count;
+      cartBtn.style.display = "block";
 
       setTimeout(() => {
-        toast.remove();
-      }, 5300); // الحذف بعد انتهاء التدرج
+        cartBtn.style.opacity = "1";
+      }, 100);
+
+      setTimeout(() => {
+        cartBtn.style.opacity = "0";
+        setTimeout(() => cartBtn.style.display = "none", 1000);
+      }, 10000);
     }
 
     document.querySelectorAll('.add-to-cart').forEach(button => {
@@ -228,6 +261,7 @@
         .then(res => res.json())
         .then(data => {
           showToast(`✅ ${data.message}`);
+          showFloatingCart(data.cart_count || 1);  // عدد المنتجات في السلة
         })
         .catch(err => console.error("خطأ:", err));
       });

@@ -1,133 +1,17 @@
 <!-- templates/header.html -->
-<style>
-  .popup-menu {
-    display: none;
-    position: absolute;
-    top: 60px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    min-width: 200px;
-    overflow: hidden;
-    animation: fadeIn 0.25s ease;
-    z-index: 1001;
-  }
+<header style="
+  background: linear-gradient(to right, #c2e9fb, #e0f7ff);
+  padding: 1rem 1.5rem;
+  font-family: 'Cairo', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1000;
+">
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  header {
-    background: linear-gradient(to right, #c2e9fb, #e0f7ff);
-    padding: 1rem 1.5rem;
-    font-family: 'Cairo', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    position: relative;
-    z-index: 1000;
-  }
-
-  .header-logo {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #0077b6;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    transition: transform 0.2s;
-  }
-
-  .header-logo:hover {
-    transform: scale(1.05);
-  }
-
-  .avatar {
-    width: 42px;
-    height: 42px;
-    background-color: #2e6d82;
-    color: white;
-    font-weight: bold;
-    text-align: center;
-    line-height: 42px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
-
-  .avatar:hover {
-    transform: scale(1.1);
-  }
-
-  .popup-menu a, .popup-menu button {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.9rem 1.2rem;
-    font-family: 'Cairo', sans-serif;
-    font-size: 1rem;
-    text-decoration: none;
-    border: none;
-    background: none;
-    width: 100%;
-    text-align: right;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-
-  .popup-menu a:hover,
-  .popup-menu button:hover {
-    background: #f3f9fc;
-  }
-
-  .popup-menu a { color: #0d47a1; }
-  .popup-menu button { color: #c62828; }
-
-  .cart-float {
-    position: fixed;
-    top: 80px;
-    left: 20px;
-    background: #0077b6;
-    color: white;
-    padding: 0.6rem 1rem;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-weight: bold;
-    text-decoration: none;
-    transform: translateX(-200%);
-    transition: transform 0.5s ease;
-    z-index: 2000;
-  }
-
-  .cart-float.show {
-    transform: translateX(0);
-  }
-
-  .cart-count {
-    background: #ffcb05;
-    color: black;
-    padding: 0.2rem 0.5rem;
-    border-radius: 999px;
-    font-size: 0.9rem;
-  }
-
-  @media (max-width: 600px) {
-    header {
-      flex-direction: row-reverse;
-    }
-
-    .header-logo {
-      font-size: 1.4rem;
-    }
-  }
-</style>
-
-<header>
-  <!-- يمين: أيقونة الهمبرغر -->
+  <!-- يمين: قائمة الهمبرغر -->
   <div style="position: relative;">
     <div onclick="toggleNavMenu()" style="cursor: pointer;">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
@@ -145,13 +29,34 @@
   </div>
 
   <!-- الوسط: الشعار -->
-  <a href="/" class="header-logo">🛍️ شقف</a>
+  <a href="/" class="header-logo" style="
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #0077b6;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s;
+  " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+    🛍️ شقف
+  </a>
 
   <!-- يسار: تسجيل الدخول أو الحساب -->
   <div style="display: flex; align-items: center;">
     {% if user.is_authenticated %}
       <div style="position: relative;">
-        <div class="avatar" onclick="toggleUserMenu()">
+        <div class="avatar" onclick="toggleUserMenu()" style="
+          width: 42px;
+          height: 42px;
+          background-color: #2e6d82;
+          color: white;
+          font-weight: bold;
+          text-align: center;
+          line-height: 42px;
+          border-radius: 50%;
+          cursor: pointer;
+          transition: transform 0.2s;
+        ">
           {{ user.username|slice:":1"|upper }}
         </div>
         <div id="userMenu" class="popup-menu" style="left: 0;">
@@ -178,11 +83,89 @@
   </div>
 </header>
 
-<!-- زر عائم يظهر بعد إضافة منتج -->
-<a href="/cart/" id="cartFloat" class="cart-float">
-  🛒 سلة التسوق <span id="cartCount" class="cart-count">0</span>
+<!-- زر عائم لسلة التسوق -->
+<a href="/cart/" id="cartFloat" class="cart-float" style="
+  position: fixed;
+  top: 80px;
+  left: 20px;
+  background: #0077b6;
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: bold;
+  text-decoration: none;
+  transform: translateX(-200%);
+  transition: transform 0.5s ease;
+  z-index: 2000;
+">
+  🛒 سلة التسوق <span id="cartCount" class="cart-count" style="
+    background: #ffcb05;
+    color: black;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+  ">0</span>
 </a>
 
+<!-- قائمة منبثقة -->
+<style>
+  .popup-menu {
+    display: none;
+    position: absolute;
+    top: 60px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    min-width: 200px;
+    overflow: hidden;
+    animation: fadeIn 0.25s ease;
+    z-index: 1001;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .popup-menu a, .popup-menu button {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1.2rem;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    text-decoration: none;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: right;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .popup-menu a:hover,
+  .popup-menu button:hover {
+    background: #f3f9fc;
+  }
+
+  .popup-menu a { color: #0d47a1; }
+  .popup-menu button { color: #c62828; }
+
+  @media (max-width: 600px) {
+    header {
+      flex-direction: row-reverse;
+    }
+
+    .header-logo {
+      font-size: 1.4rem;
+    }
+  }
+</style>
+
+<!-- سكربت التفاعل -->
 <script>
   function toggleUserMenu() {
     const menu = document.getElementById("userMenu");
@@ -205,7 +188,6 @@
     }
   });
 
-  // عرض زر سلة التسوق مؤقتاً عند الإضافة
   function showCartFloat(count = 1) {
     const floatBtn = document.getElementById("cartFloat");
     const countSpan = document.getElementById("cartCount");
@@ -214,9 +196,6 @@
 
     setTimeout(() => {
       floatBtn.classList.remove("show");
-    }, 10000); // 10 ثوانٍ
+    }, 10000);
   }
-
-  // مثال: استخدم هذه الدالة عند الإضافة للسلة
-  // showCartFloat(3); ← يمكن مناداة هذه الدالة من Ajax بعد الإضافة
 </script>

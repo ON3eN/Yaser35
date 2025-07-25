@@ -72,11 +72,12 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background 0.3s ease, transform 0.2s ease;
     }
 
     .add-to-cart:hover {
       background: #005b8f;
+      transform: scale(1.05);
     }
 
     .no-products {
@@ -122,6 +123,29 @@
         opacity: 1;
       }
     }
+
+    #cart-float-button {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #0077b6;
+      color: white;
+      border-radius: 50px;
+      padding: 0.6rem 1.2rem;
+      font-family: 'Cairo', sans-serif;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      animation: bounceIn 0.5s ease forwards;
+      z-index: 9999;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: translateY(50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -149,6 +173,8 @@
   </section>
 
   <div class="toast-container" id="toast-container"></div>
+
+  <a href="/cart/" id="cart-float-button">سلة التسوق 🛒 <span id="cart-count">0</span></a>
 
   {% include 'footer.html' %}
 
@@ -181,6 +207,26 @@
       }, 5300);
     }
 
+    function updateCartAnimation() {
+      const cartBtn = document.getElementById('cart-float-button');
+      let countSpan = document.getElementById('cart-count');
+      let current = parseInt(countSpan.innerText) || 0;
+      countSpan.innerText = current + 1;
+
+      cartBtn.style.display = 'flex';
+      cartBtn.style.animation = 'bounceIn 0.5s ease';
+
+      setTimeout(() => {
+        cartBtn.style.opacity = '0';
+        cartBtn.style.transition = 'opacity 0.5s ease';
+      }, 9500);
+
+      setTimeout(() => {
+        cartBtn.style.display = 'none';
+        cartBtn.style.opacity = '1';
+      }, 10000);
+    }
+
     document.querySelectorAll('.add-to-cart').forEach(button => {
       button.addEventListener('click', function(e) {
         e.preventDefault();
@@ -196,6 +242,7 @@
         .then(response => response.json())
         .then(data => {
           showToast(`✅ ${data.message}`);
+          updateCartAnimation();
         })
         .catch(error => {
           console.error("خطأ في الإضافة:", error);

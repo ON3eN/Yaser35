@@ -1,11 +1,8 @@
-# cart/views.py
-
 from django.shortcuts import render, redirect, get_object_or_404
 from store.models import Product
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-
 
 # عرض السلة
 def cart_view(request):
@@ -93,7 +90,7 @@ def increase_quantity(request, product_id):
     return redirect('cart:cart')
 
 
-# تقليل الكمية
+# ✅ تقليل الكمية مع تنبيه المستخدم
 def decrease_quantity(request, product_id):
     cart_items = request.session.get('cart_items', [])
     for item in cart_items:
@@ -101,7 +98,7 @@ def decrease_quantity(request, product_id):
             if item['quantity'] > 1:
                 item['quantity'] -= 1
             else:
-                cart_items.remove(item)
+                messages.warning(request, "📌 إذا كنت تريد حذف المنتج، اضغط على علامة الحذف الحمراء في أعلى المنتج.")
             break
     request.session['cart_items'] = cart_items
     return redirect('cart:cart')

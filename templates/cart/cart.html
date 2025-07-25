@@ -24,36 +24,46 @@
       color: #004e75;
       text-align: center;
       margin-bottom: 1.5rem;
-      font-size: 1.6rem;
+      font-size: 1.7rem;
     }
 
     .cart-item {
       background: white;
-      border-radius: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      margin-bottom: 1rem;
+      border-radius: 18px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .cart-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .cart-details {
       padding: 1rem;
     }
 
-    .cart-item h3 {
-      font-size: 1rem;
-      margin: 0 0 0.5rem;
+    .cart-details h3 {
+      font-size: 1.1rem;
+      margin: 0 0 0.6rem;
       color: #003249;
     }
 
     .price-line {
       display: flex;
       justify-content: space-between;
-      margin: 0.5rem 0;
       font-size: 0.95rem;
+      margin: 0.3rem 0;
     }
 
     .qty-controls {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 0.8rem;
-      margin: 0.5rem 0;
+      gap: 1rem;
+      margin-top: 1rem;
     }
 
     .qty-btn {
@@ -61,38 +71,33 @@
       color: white;
       border: none;
       border-radius: 50%;
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       font-size: 1.2rem;
       cursor: pointer;
     }
 
     .delete-btn {
-      display: block;
-      margin: 1rem auto 0;
       background: #e63946;
       color: white;
       border: none;
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
       font-size: 1.3rem;
+      margin: 1rem auto 0;
+      display: block;
       cursor: pointer;
     }
 
     .summary {
       background: white;
-      border-radius: 12px;
-      padding: 1.2rem;
-      margin-top: 2rem;
+      border-radius: 14px;
+      padding: 1rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      font-size: 1rem;
-    }
-
-    .summary div {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.6rem;
+      font-size: 1.1rem;
+      margin-top: 2rem;
+      text-align: center;
     }
 
     .coupon-section {
@@ -103,17 +108,19 @@
 
     .coupon-section input {
       flex: 1;
-      padding: 0.6rem;
+      padding: 0.7rem;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      border-radius: 10px;
+      font-size: 1rem;
     }
 
     .coupon-section button {
       background: #0077b6;
       color: white;
       border: none;
-      padding: 0.6rem 1rem;
-      border-radius: 8px;
+      padding: 0.7rem 1.2rem;
+      border-radius: 10px;
+      font-size: 1rem;
       cursor: pointer;
     }
 
@@ -121,17 +128,18 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      margin-top: 1.5rem;
+      margin-top: 2rem;
     }
 
     .btn {
       background: #0077b6;
       color: white;
       text-align: center;
-      padding: 0.9rem;
-      border-radius: 10px;
+      padding: 1rem;
+      border-radius: 12px;
       text-decoration: none;
       font-weight: bold;
+      font-size: 1.1rem;
     }
 
     .modal-overlay {
@@ -183,39 +191,41 @@
   {% if cart_items %}
     {% for item in cart_items %}
       <div class="cart-item">
-        <h3>{{ item.name }}</h3>
+        <!-- صورة المنتج -->
+        <img src="{{ item.image_url|default:'/static/images/placeholder.png' }}" class="cart-img" alt="صورة المنتج">
 
-        <div class="price-line">
-          <span>السعر:</span>
-          <span>{{ item.price }} ريال</span>
-        </div>
+        <div class="cart-details">
+          <h3>{{ item.name }}</h3>
 
-        <div class="price-line">
-          <span>المجموع:</span>
-          <span>{{ item.subtotal }} ريال</span>
-        </div>
+          <div class="price-line">
+            <span>السعر:</span>
+            <span>{{ item.price }} ريال</span>
+          </div>
 
-        <div class="qty-controls">
-          <form method="post" action="{% url 'cart:decrease_quantity' item.id %}">{% csrf_token %}
-            <button type="submit" class="qty-btn">-</button>
+          <div class="price-line">
+            <span>المجموع:</span>
+            <span>{{ item.subtotal }} ريال</span>
+          </div>
+
+          <div class="qty-controls">
+            <form method="post" action="{% url 'cart:decrease_quantity' item.id %}">{% csrf_token %}
+              <button type="submit" class="qty-btn">-</button>
+            </form>
+            <span>{{ item.quantity }}</span>
+            <form method="post" action="{% url 'cart:increase_quantity' item.id %}">{% csrf_token %}
+              <button type="submit" class="qty-btn">+</button>
+            </form>
+          </div>
+
+          <form method="post" action="{% url 'cart:remove_from_cart' item.id %}">{% csrf_token %}
+            <button type="submit" class="delete-btn">×</button>
           </form>
-          <span>{{ item.quantity }}</span>
-          <form method="post" action="{% url 'cart:increase_quantity' item.id %}">{% csrf_token %}
-            <button type="submit" class="qty-btn">+</button>
-          </form>
         </div>
-
-        <form method="post" action="{% url 'cart:remove_from_cart' item.id %}">{% csrf_token %}
-          <button type="submit" class="delete-btn">×</button>
-        </form>
       </div>
     {% endfor %}
 
     <div class="summary">
-      <div>
-        <strong>الإجمالي:</strong>
-        <strong>{{ total }} ريال</strong>
-      </div>
+      <strong>الإجمالي: {{ total }} ريال</strong>
     </div>
 
     <form class="coupon-section" method="post" action="{% url 'cart:apply_coupon' %}">

@@ -32,21 +32,15 @@ def checkout_view(request):
                 price = product.price * quantity
                 total_price += price
 
-                # إنشاء طلب
+                # حفظ الطلب
                 Order.objects.create(
                     user=request.user,
                     product=product,
                     quantity=quantity,
-                    # ↓↓↓ إذا كانت هذه الحقول موجودة في الموديل Order
-                    # full_name=full_name,
-                    # phone=phone,
-                    # address=address,
-                    # payment_method=payment,
-                    # latitude=latitude,
-                    # longitude=longitude
+                    # يمكنك إضافة الحقول هنا إذا كانت موجودة في الموديل
                 )
 
-                order_details.append(f"- {product.name} × {quantity} = {price:.2f} ريال")
+                order_details.append(f"🧾 {product.name} × {quantity} = {price:.2f} ريال")
 
             except Product.DoesNotExist:
                 continue
@@ -54,48 +48,56 @@ def checkout_view(request):
         # تفريغ السلة
         request.session['cart_items'] = []
 
-        # رسالة نجاح للمستخدم
+        # إرسال إشعار نجاح للمستخدم
         messages.success(request, "تم تأكيد طلبك بنجاح!")
 
-        # إرسال بريد للمستخدم
-        send_mail(
-            subject="✔️ تم تأكيد طلبك - شقف",
-            message=f"""مرحبًا {request.user.username} 👋،
+        # --- 📧 رسالة المستخدم ---
+        user_message = f"""
+مرحبًا {request.user.username} 👋،
 
-تم استلام طلبك بنجاح ✅
+تم استلام طلبك بنجاح في متجر شقف ✅
 
-تفاصيل الطلب:
+🔹 تفاصيل الطلب:
 {chr(10).join(order_details)}
 
-📦 المجموع الكلي: {total_price:.2f} ريال
-طريقة الدفع: {payment}
+💰 المجموع الكلي: {total_price:.2f} ريال
+💳 طريقة الدفع: {payment}
 
-📍 العنوان: {address}
-📱 الجوال: {phone}
+📍 عنوان التوصيل: {address}
+📱 رقم الجوال: {phone}
 
-شكرًا لتسوقك معنا 💙
-""",
+📦 سيتم تجهيز الطلب وإرساله إليك بأقرب وقت ممكن.
+
+شكراً لاختيارك شقف! 💙
+"""
+
+        send_mail(
+            subject="✔️ تم تأكيد طلبك - شقف",
+            message=user_message,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[request.user.email],
             fail_silently=False
         )
 
-        # إرسال إشعار لصاحب المتجر
-        send_mail(
-            subject="🛒 طلب جديد من عميل",
-            message=f"""📥 طلب جديد من {request.user.username}
+        # --- 📩 رسالة صاحب المتجر ---
+        admin_message = f"""
+🛍️ طلب جديد من {request.user.username}
 
-📧 البريد: {request.user.email}
-📍 الموقع: https://www.google.com/maps?q={latitude},{longitude}
+📧 البريد الإلكتروني: {request.user.email}
+📍 رابط الموقع: https://www.google.com/maps?q={latitude},{longitude}
 
-تفاصيل الطلب:
+📝 تفاصيل الطلب:
 {chr(10).join(order_details)}
 
-📱 الجوال: {phone}
+📱 رقم الجوال: {phone}
 🏠 العنوان: {address}
-💳 الدفع: {payment}
-💰 الإجمالي: {total_price:.2f} ريال
-""",
+💳 طريقة الدفع: {payment}
+💰 المجموع: {total_price:.2f} ريال
+"""
+
+        send_mail(
+            subject="📬 طلب جديد - إشعار من شقف",
+            message=admin_message,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[settings.DEFAULT_FROM_EMAIL],
             fail_silently=False

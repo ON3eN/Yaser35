@@ -18,7 +18,7 @@
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       margin: 3rem auto;
       background: white;
       padding: 2rem;
@@ -49,7 +49,7 @@
 
     #map {
       width: 100%;
-      height: 300px;
+      height: 450px;
       margin-top: 1rem;
       border-radius: 12px;
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
@@ -147,7 +147,7 @@
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    const map = L.map('map').setView([24.7136, 46.6753], 13);
+    const map = L.map('map', { zoomControl: true }).setView([24.7136, 46.6753], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap'
@@ -160,6 +160,18 @@
       document.getElementById('lat').value = latlng.lat;
       document.getElementById('lng').value = latlng.lng;
     });
+
+    // تحديد الموقع الجغرافي للمستخدم (اختياري)
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        map.setView([lat, lng], 15);
+        marker.setLatLng([lat, lng]);
+        document.getElementById('lat').value = lat;
+        document.getElementById('lng').value = lng;
+      });
+    }
   </script>
 
 </body>

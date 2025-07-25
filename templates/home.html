@@ -109,22 +109,28 @@
       background-color: #003d63;
     }
 
-    /* زر السلة العائم */
+    /* زر السلة العائم (مُعدل لأسفل اليسار) */
     .cart-float {
       position: fixed;
       bottom: 20px;
       left: 20px;
       background: #0077b6;
       color: white;
-      padding: 0.6rem 1.1rem;
+      padding: 0.6rem 1.2rem;
       border-radius: 50px;
       font-weight: bold;
       text-decoration: none;
       display: none;
       align-items: center;
-      gap: 0.5rem;
-      animation: slideIn 0.5s ease;
+      gap: 0.6rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       z-index: 9999;
+      transition: all 0.4s ease;
+    }
+
+    .cart-float.show {
+      display: flex;
+      animation: slideIn 0.4s ease;
     }
 
     .cart-count {
@@ -137,7 +143,7 @@
 
     @keyframes slideIn {
       from {
-        transform: translateY(50px);
+        transform: translateY(20px);
         opacity: 0;
       }
       to {
@@ -204,17 +210,10 @@
       const floatBtn = document.getElementById("cartFloat");
       const countSpan = document.getElementById("cartCount");
       countSpan.textContent = count;
-      floatBtn.style.display = "flex";
-      floatBtn.style.animation = "slideIn 0.5s ease";
+      floatBtn.classList.add("show");
 
       setTimeout(() => {
-        floatBtn.style.opacity = "0";
-        floatBtn.style.transition = "opacity 0.5s ease";
-      }, 9500);
-
-      setTimeout(() => {
-        floatBtn.style.display = "none";
-        floatBtn.style.opacity = "1";
+        floatBtn.classList.remove("show");
       }, 10000);
     }
 
@@ -232,7 +231,7 @@
         })
         .then(res => res.json())
         .then(data => {
-          showCartFloat(data.cart_count || 1);
+          showCartFloat(data.cartCount || 1);
         })
         .catch(err => console.error("خطأ:", err));
       });

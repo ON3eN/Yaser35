@@ -16,7 +16,7 @@
 
     .container {
       padding: 1rem;
-      max-width: 700px;
+      max-width: 1000px;
       margin: auto;
     }
 
@@ -27,13 +27,27 @@
       margin-bottom: 1.5rem;
     }
 
+    .cart-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+
     .cart-item {
       background: white;
       border-radius: 16px;
       box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-      margin-bottom: 1.5rem;
       overflow: hidden;
       position: relative;
+      width: calc(50% - 0.5rem);
+      min-width: 280px;
+    }
+
+    @media (max-width: 600px) {
+      .cart-item {
+        width: 100%;
+      }
     }
 
     .cart-img {
@@ -115,12 +129,14 @@
       text-align: center;
       font-size: 1.1rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin-top: 2rem;
     }
 
     .coupon-section {
       margin-top: 1.5rem;
       display: flex;
       gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     .coupon-section input {
@@ -129,6 +145,7 @@
       border: 1px solid #ccc;
       border-radius: 10px;
       font-size: 1rem;
+      min-width: 200px;
     }
 
     .coupon-section button {
@@ -232,32 +249,34 @@
   <h1>🛒 سلة التسوق</h1>
 
   {% if cart_items %}
-    {% for item in cart_items %}
-      <div class="cart-item">
-        <form method="post" action="{% url 'cart:remove_from_cart' item.id %}">{% csrf_token %}
-          <button type="submit" class="delete-btn">×</button>
-        </form>
+    <div class="cart-grid">
+      {% for item in cart_items %}
+        <div class="cart-item">
+          <form method="post" action="{% url 'cart:remove_from_cart' item.id %}">{% csrf_token %}
+            <button type="submit" class="delete-btn">×</button>
+          </form>
 
-        <img src="{{ item.image_url|default:'/static/images/placeholder.png' }}" class="cart-img" alt="صورة المنتج">
+          <img src="{{ item.image_url|default:'/static/images/placeholder.png' }}" class="cart-img" alt="صورة المنتج">
 
-        <div class="cart-details">
-          <div class="top-row">
-            <h3>{{ item.name }}</h3>
-            <div class="qty-controls-inline">
-              <form method="post" action="{% url 'cart:decrease_quantity' item.id %}">{% csrf_token %}
-                <button type="submit" class="qty-btn">-</button>
-              </form>
-              <span>{{ item.quantity }}</span>
-              <form method="post" action="{% url 'cart:increase_quantity' item.id %}">{% csrf_token %}
-                <button type="submit" class="qty-btn">+</button>
-              </form>
+          <div class="cart-details">
+            <div class="top-row">
+              <h3>{{ item.name }}</h3>
+              <div class="qty-controls-inline">
+                <form method="post" action="{% url 'cart:decrease_quantity' item.id %}">{% csrf_token %}
+                  <button type="submit" class="qty-btn">-</button>
+                </form>
+                <span>{{ item.quantity }}</span>
+                <form method="post" action="{% url 'cart:increase_quantity' item.id %}">{% csrf_token %}
+                  <button type="submit" class="qty-btn">+</button>
+                </form>
+              </div>
             </div>
+            <div class="price-line"><span>السعر:</span><span>{{ item.price }} ريال</span></div>
+            <div class="price-line"><span>المجموع:</span><span>{{ item.subtotal }} ريال</span></div>
           </div>
-          <div class="price-line"><span>السعر:</span><span>{{ item.price }} ريال</span></div>
-          <div class="price-line"><span>المجموع:</span><span>{{ item.subtotal }} ريال</span></div>
         </div>
-      </div>
-    {% endfor %}
+      {% endfor %}
+    </div>
 
     <div class="summary">
       <strong>الإجمالي: {{ total }} ريال</strong>
@@ -285,7 +304,6 @@
   {% endif %}
 </div>
 
-<!-- نافذة تنبيه تسجيل الدخول -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal-content">
     <h3>يجب تسجيل الدخول لإتمام الشراء.</h3>

@@ -18,30 +18,6 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  .popup-menu a, .popup-menu button {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.9rem 1.2rem;
-    font-family: 'Cairo', sans-serif;
-    font-size: 1rem;
-    text-decoration: none;
-    border: none;
-    background: none;
-    width: 100%;
-    text-align: right;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-
-  .popup-menu a:hover,
-  .popup-menu button:hover {
-    background: #f3f9fc;
-  }
-
-  .popup-menu a { color: #0d47a1; }
-  .popup-menu button { color: #c62828; }
-
   header {
     background: linear-gradient(to right, #c2e9fb, #e0f7ff);
     padding: 1rem 1.5rem;
@@ -85,6 +61,60 @@
     transform: scale(1.1);
   }
 
+  .popup-menu a, .popup-menu button {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1.2rem;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    text-decoration: none;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: right;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .popup-menu a:hover,
+  .popup-menu button:hover {
+    background: #f3f9fc;
+  }
+
+  .popup-menu a { color: #0d47a1; }
+  .popup-menu button { color: #c62828; }
+
+  .cart-float {
+    position: fixed;
+    top: 80px;
+    left: 20px;
+    background: #0077b6;
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: bold;
+    text-decoration: none;
+    transform: translateX(-200%);
+    transition: transform 0.5s ease;
+    z-index: 2000;
+  }
+
+  .cart-float.show {
+    transform: translateX(0);
+  }
+
+  .cart-count {
+    background: #ffcb05;
+    color: black;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+  }
+
   @media (max-width: 600px) {
     header {
       flex-direction: row-reverse;
@@ -97,7 +127,27 @@
 </style>
 
 <header>
-  <!-- يسار: قائمة المستخدم -->
+  <!-- يمين: أيقونة الهمبرغر -->
+  <div style="position: relative;">
+    <div onclick="toggleNavMenu()" style="cursor: pointer;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+        <rect y="4" width="24" height="2" fill="#333"/>
+        <rect y="11" width="18" height="2" fill="#333"/>
+        <rect y="18" width="12" height="2" fill="#333"/>
+      </svg>
+    </div>
+    <div id="navMenu" class="popup-menu" style="right: 0;">
+      <a href="/">🏠 الرئيسية</a>
+      <a href="{% url 'store:products' %}">🛍 المنتجات</a>
+      <a href="/cart/">🛒 سلة التسوق</a>
+      <a href="#contact">📞 تواصل معنا</a>
+    </div>
+  </div>
+
+  <!-- الوسط: الشعار -->
+  <a href="/" class="header-logo">🛍️ شقف</a>
+
+  <!-- يسار: تسجيل الدخول أو الحساب -->
   <div style="display: flex; align-items: center;">
     {% if user.is_authenticated %}
       <div style="position: relative;">
@@ -107,8 +157,7 @@
         <div id="userMenu" class="popup-menu" style="left: 0;">
           <a href="#"><span>🛠</span> إعدادات الحساب</a>
           <a href="#"><span>💳</span> إعدادات الدفع</a>
-          <form method="post" action="{% url 'account:logout' %}">
-            {% csrf_token %}
+          <form method="post" action="{% url 'account:logout' %}">{% csrf_token %}
             <button type="submit"><span>🚪</span> تسجيل الخروج</button>
           </form>
         </div>
@@ -127,27 +176,12 @@
       </a>
     {% endif %}
   </div>
-
-  <!-- الوسط: الشعار -->
-  <a href="/" class="header-logo">🛍️ شقف</a>
-
-  <!-- يمين: قائمة الهمبرغر -->
-  <div style="position: relative;">
-    <div onclick="toggleNavMenu()" style="cursor: pointer;">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-        <rect y="4" width="24" height="2" fill="#333"/>
-        <rect y="11" width="18" height="2" fill="#333"/>
-        <rect y="18" width="12" height="2" fill="#333"/>
-      </svg>
-    </div>
-    <div id="navMenu" class="popup-menu" style="right: 0;">
-      <a href="/">🏠 الرئيسية</a>
-      <a href="{% url 'store:products' %}">🛍 المنتجات</a>
-      <a href="/cart/">🛒 سلة التسوق</a>
-      <a href="#contact">📞 تواصل معنا</a>
-    </div>
-  </div>
 </header>
+
+<!-- زر عائم يظهر بعد إضافة منتج -->
+<a href="/cart/" id="cartFloat" class="cart-float">
+  🛒 سلة التسوق <span id="cartCount" class="cart-count">0</span>
+</a>
 
 <script>
   function toggleUserMenu() {
@@ -170,4 +204,19 @@
       if (navMenu) navMenu.style.display = "none";
     }
   });
+
+  // عرض زر سلة التسوق مؤقتاً عند الإضافة
+  function showCartFloat(count = 1) {
+    const floatBtn = document.getElementById("cartFloat");
+    const countSpan = document.getElementById("cartCount");
+    countSpan.textContent = count;
+    floatBtn.classList.add("show");
+
+    setTimeout(() => {
+      floatBtn.classList.remove("show");
+    }, 10000); // 10 ثوانٍ
+  }
+
+  // مثال: استخدم هذه الدالة عند الإضافة للسلة
+  // showCartFloat(3); ← يمكن مناداة هذه الدالة من Ajax بعد الإضافة
 </script>

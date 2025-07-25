@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>سلة التسوق - شقف</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     body {
@@ -22,16 +22,15 @@
 
     h1 {
       text-align: center;
-      font-size: 1.8rem;
       color: #004e75;
+      font-size: 2rem;
       margin-bottom: 1.5rem;
     }
 
     .cart-grid {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 1rem;
-      justify-content: center;
     }
 
     .cart-item {
@@ -40,25 +39,11 @@
       box-shadow: 0 3px 12px rgba(0,0,0,0.06);
       overflow: hidden;
       position: relative;
-      width: calc(33.33% - 1rem);
-      min-width: 270px;
-    }
-
-    @media (max-width: 900px) {
-      .cart-item {
-        width: calc(50% - 1rem);
-      }
-    }
-
-    @media (max-width: 600px) {
-      .cart-item {
-        width: 100%;
-      }
     }
 
     .cart-img {
       width: 100%;
-      height: 170px;
+      height: 180px;
       object-fit: cover;
     }
 
@@ -146,8 +131,8 @@
     .coupon-section {
       margin-top: 1.5rem;
       display: flex;
-      gap: 0.5rem;
       flex-wrap: wrap;
+      gap: 0.5rem;
     }
 
     .coupon-section input {
@@ -156,7 +141,7 @@
       border: 1px solid #ccc;
       border-radius: 10px;
       font-size: 1rem;
-      min-width: 200px;
+      min-width: 180px;
     }
 
     .coupon-section button {
@@ -235,16 +220,23 @@
       color: white;
     }
 
+    .empty-cart {
+      text-align: center;
+      padding: 2rem;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
     .empty-link {
       display: inline-block;
-      margin-top: 0.7rem;
-      padding: 0.5rem 1rem;
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
       background: #0077b6;
       color: white;
       text-decoration: none;
       border-radius: 8px;
       font-weight: bold;
-      transition: background 0.2s ease;
     }
 
     .empty-link:hover {
@@ -307,7 +299,7 @@
       {% endif %}
     </div>
   {% else %}
-    <div class="cart-item" style="text-align:center; padding: 1.5rem;">
+    <div class="empty-cart">
       🧺 سلة التسوق فارغة حالياً
       <br>
       <a href="/store/products/" class="empty-link">أضف الآن</a>

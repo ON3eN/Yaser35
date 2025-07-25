@@ -206,6 +206,22 @@
       background-color: #0077b6;
       color: white;
     }
+
+    .empty-link {
+      display: inline-block;
+      margin-top: 0.7rem;
+      padding: 0.5rem 1rem;
+      background: #0077b6;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background 0.2s ease;
+    }
+
+    .empty-link:hover {
+      background: #005f91;
+    }
   </style>
 </head>
 <body>
@@ -218,7 +234,6 @@
   {% if cart_items %}
     {% for item in cart_items %}
       <div class="cart-item">
-        <!-- زر الحذف -->
         <form method="post" action="{% url 'cart:remove_from_cart' item.id %}">{% csrf_token %}
           <button type="submit" class="delete-btn">×</button>
         </form>
@@ -238,7 +253,6 @@
               </form>
             </div>
           </div>
-
           <div class="price-line"><span>السعر:</span><span>{{ item.price }} ريال</span></div>
           <div class="price-line"><span>المجموع:</span><span>{{ item.subtotal }} ريال</span></div>
         </div>
@@ -262,9 +276,12 @@
         <button class="btn" onclick="showLoginModal()">إتمام الشراء</button>
       {% endif %}
     </div>
-
   {% else %}
-    <div class="cart-item" style="text-align:center;">🧺 سلة التسوق فارغة حالياً</div>
+    <div class="cart-item" style="text-align:center; padding: 1.5rem;">
+      🧺 سلة التسوق فارغة حالياً
+      <br>
+      <a href="/products" class="empty-link">أضف الآن</a>
+    </div>
   {% endif %}
 </div>
 

@@ -37,10 +37,10 @@ def checkout_view(request):
                     user=request.user,
                     product=product,
                     quantity=quantity,
-                    # يمكنك إضافة الحقول هنا إذا كانت موجودة في الموديل
+                    # أضف المزيد من الحقول إذا لزم الأمر
                 )
 
-                order_details.append(f"🧾 {product.name} × {quantity} = {price:.2f} ريال")
+                order_details.append(f"• {product.name} × {quantity} = {price:.2f} ريال")
 
             except Product.DoesNotExist:
                 continue
@@ -48,10 +48,10 @@ def checkout_view(request):
         # تفريغ السلة
         request.session['cart_items'] = []
 
-        # إرسال إشعار نجاح للمستخدم
+        # إشعار المستخدم
         messages.success(request, "تم تأكيد طلبك بنجاح!")
 
-        # --- 📧 رسالة المستخدم ---
+        # --- رسالة للمستخدم ---
         user_message = f"""
 مرحبًا {request.user.username} 👋،
 
@@ -79,20 +79,30 @@ def checkout_view(request):
             fail_silently=False
         )
 
-        # --- 📩 رسالة صاحب المتجر ---
+        # --- رسالة لصاحب المتجر بشكل منسق ---
         admin_message = f"""
 🛍️ طلب جديد من {request.user.username}
 
-📧 البريد الإلكتروني: {request.user.email}
-📍 رابط الموقع: https://www.google.com/maps?q={latitude},{longitude}
+📧 البريد الإلكتروني:
+{request.user.email}
 
-📝 تفاصيل الطلب:
+📱 رقم الجوال:
+{phone}
+
+🏠 عنوان التوصيل:
+{address}
+
+📍 رابط الموقع:
+https://www.google.com/maps?q={latitude},{longitude}
+
+📦 تفاصيل الطلب:
 {chr(10).join(order_details)}
 
-📱 رقم الجوال: {phone}
-🏠 العنوان: {address}
-💳 طريقة الدفع: {payment}
-💰 المجموع: {total_price:.2f} ريال
+💳 طريقة الدفع:
+{payment}
+
+💰 المجموع الكلي:
+{total_price:.2f} ريال
 """
 
         send_mail(

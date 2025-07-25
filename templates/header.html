@@ -23,7 +23,7 @@
     <div id="navMenu" class="popup-menu" style="right: 0;">
       <a href="/">🏠 الرئيسية</a>
       <a href="{% url 'store:products' %}">🛍 المنتجات</a>
-      <a href="/cart/">🛒 سلة التسوق</a>
+      <a href="{% url 'cart:cart' %}">🛒 سلة التسوق</a>
       <a href="#contact">📞 تواصل معنا</a>
     </div>
   </div>
@@ -60,8 +60,8 @@
           {{ user.username|slice:":1"|upper }}
         </div>
         <div id="userMenu" class="popup-menu" style="left: 0;">
-          <a href="#"><span>🛠</span> إعدادات الحساب</a>
-          <a href="#"><span>💳</span> إعدادات الدفع</a>
+          <a href="{% url 'account:account_settings' %}"><span>🛠</span> إعدادات الحساب</a>
+          <a href="{% url 'account:payment_settings' %}"><span>💳</span> إعدادات الدفع</a>
           <form method="post" action="{% url 'account:logout' %}">{% csrf_token %}
             <button type="submit"><span>🚪</span> تسجيل الخروج</button>
           </form>
@@ -83,28 +83,26 @@
   </div>
 </header>
 
-<!-- زر عائم لسلة التسوق -->
-<a href="/cart/" id="cartFloat" class="cart-float" style="
+<!-- زر سلة التسوق العائم -->
+<a href="{% url 'cart:cart' %}" id="cartFloat" class="cart-float" style="
   position: fixed;
-  top: 80px;
+  bottom: 20px;
   left: 20px;
   background: #0077b6;
   color: white;
-  padding: 0.6rem 1rem;
-  border-radius: 12px;
-  display: flex;
+  padding: 0.6rem 1.1rem;
+  border-radius: 50px;
+  display: none;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   font-weight: bold;
   text-decoration: none;
-  transform: translateX(-200%);
-  transition: transform 0.5s ease;
   z-index: 2000;
 ">
   🛒 سلة التسوق <span id="cartCount" class="cart-count" style="
     background: #ffcb05;
     color: black;
-    padding: 0.2rem 0.5rem;
+    padding: 0.2rem 0.6rem;
     border-radius: 999px;
     font-size: 0.9rem;
   ">0</span>
@@ -130,7 +128,8 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  .popup-menu a, .popup-menu button {
+  .popup-menu a,
+  .popup-menu button {
     display: flex;
     align-items: center;
     gap: 0.6rem;
@@ -165,7 +164,6 @@
   }
 </style>
 
-<!-- سكربت التفاعل -->
 <script>
   function toggleUserMenu() {
     const menu = document.getElementById("userMenu");
@@ -192,10 +190,16 @@
     const floatBtn = document.getElementById("cartFloat");
     const countSpan = document.getElementById("cartCount");
     countSpan.textContent = count;
-    floatBtn.classList.add("show");
+    floatBtn.style.display = "flex";
 
     setTimeout(() => {
-      floatBtn.classList.remove("show");
+      floatBtn.style.opacity = "0";
+      floatBtn.style.transition = "opacity 0.5s ease";
+    }, 9500);
+
+    setTimeout(() => {
+      floatBtn.style.display = "none";
+      floatBtn.style.opacity = "1";
     }, 10000);
   }
 </script>

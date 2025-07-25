@@ -109,36 +109,41 @@
       background-color: #003d63;
     }
 
+    /* زر السلة العائم */
     .cart-float {
       position: fixed;
-      top: 80px;
+      bottom: 20px;
       left: 20px;
       background: #0077b6;
       color: white;
-      padding: 0.6rem 1rem;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
+      padding: 0.6rem 1.1rem;
+      border-radius: 50px;
       font-weight: bold;
       text-decoration: none;
-      transform: translateX(-200%);
-      opacity: 0;
-      transition: transform 0.5s ease, opacity 0.5s ease;
-      z-index: 2000;
-    }
-
-    .cart-float.show {
-      transform: translateX(0);
-      opacity: 1;
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      animation: slideIn 0.5s ease;
+      z-index: 9999;
     }
 
     .cart-count {
       background: #ffcb05;
-      color: black;
-      padding: 0.2rem 0.5rem;
+      color: #000;
+      padding: 0.2rem 0.6rem;
       border-radius: 999px;
       font-size: 0.9rem;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
   </style>
 </head>
@@ -147,7 +152,7 @@
   {% include 'header.html' %}
 
   <!-- زر السلة العائم -->
-  <a href="/cart/" id="cartFloat" class="cart-float">
+  <a href="{% url 'cart:cart_detail' %}" id="cartFloat" class="cart-float">
     🛒 سلة التسوق <span id="cartCount" class="cart-count">1</span>
   </a>
 
@@ -199,10 +204,17 @@
       const floatBtn = document.getElementById("cartFloat");
       const countSpan = document.getElementById("cartCount");
       countSpan.textContent = count;
-      floatBtn.classList.add("show");
+      floatBtn.style.display = "flex";
+      floatBtn.style.animation = "slideIn 0.5s ease";
 
       setTimeout(() => {
-        floatBtn.classList.remove("show");
+        floatBtn.style.opacity = "0";
+        floatBtn.style.transition = "opacity 0.5s ease";
+      }, 9500);
+
+      setTimeout(() => {
+        floatBtn.style.display = "none";
+        floatBtn.style.opacity = "1";
       }, 10000);
     }
 

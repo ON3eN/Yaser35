@@ -109,43 +109,6 @@
       background-color: #003d63;
     }
 
-    .toast-container {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      display: flex;
-      flex-direction: column-reverse;
-      align-items: flex-end;
-      gap: 0.8rem;
-      z-index: 10000;
-    }
-
-    .toast {
-      background: #28a745;
-      color: white;
-      padding: 1rem 1.5rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      font-family: 'Cairo', sans-serif;
-      min-width: 260px;
-      opacity: 0;
-      transform: translateX(100%);
-      animation: slideIn 0.4s forwards;
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-
-    .toast.fade-out {
-      opacity: 0;
-      transform: translateX(100%);
-    }
-
-    @keyframes slideIn {
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-
     .cart-float {
       position: fixed;
       top: 80px;
@@ -160,12 +123,14 @@
       font-weight: bold;
       text-decoration: none;
       transform: translateX(-200%);
-      transition: transform 0.5s ease;
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
       z-index: 2000;
     }
 
     .cart-float.show {
       transform: translateX(0);
+      opacity: 1;
     }
 
     .cart-count {
@@ -181,6 +146,7 @@
 
   {% include 'header.html' %}
 
+  <!-- زر السلة العائم -->
   <a href="/cart/" id="cartFloat" class="cart-float">
     🛒 سلة التسوق <span id="cartCount" class="cart-count">1</span>
   </a>
@@ -215,8 +181,6 @@
     <a href="{% url 'store:products' %}" class="more-btn">عرض المزيد من المنتجات</a>
   </div>
 
-  <div class="toast-container" id="toast-container"></div>
-
   {% include 'footer.html' %}
 
   <script>
@@ -229,17 +193,6 @@
         }
       }
       return '';
-    }
-
-    function showToast(message) {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.textContent = message;
-      container.appendChild(toast);
-
-      setTimeout(() => toast.classList.add('fade-out'), 4700);
-      setTimeout(() => toast.remove(), 5300);
     }
 
     function showCartFloat(count = 1) {
@@ -267,7 +220,6 @@
         })
         .then(res => res.json())
         .then(data => {
-          showToast(`✅ ${data.message}`);
           showCartFloat(data.cart_count || 1);
         })
         .catch(err => console.error("خطأ:", err));

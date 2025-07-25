@@ -81,11 +81,12 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background 0.3s ease, transform 0.2s ease;
     }
 
     .add-to-cart:hover {
       background: #005b8f;
+      transform: scale(1.05);
     }
 
     .more-btn-container {
@@ -145,23 +146,34 @@
       }
     }
 
-    .floating-cart-button {
+    .cart-float {
       position: fixed;
-      top: 20px;
+      top: 80px;
       left: 20px;
-      background-color: #0077b6;
+      background: #0077b6;
       color: white;
       padding: 0.6rem 1rem;
-      border-radius: 10px;
-      font-size: 1rem;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: bold;
+      text-decoration: none;
+      transform: translateX(-200%);
+      transition: transform 0.5s ease;
       z-index: 2000;
-      display: none;
-      animation: fadeCartIn 0.4s ease;
     }
 
-    @keyframes fadeCartIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .cart-float.show {
+      transform: translateX(0);
+    }
+
+    .cart-count {
+      background: #ffcb05;
+      color: black;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
     }
   </style>
 </head>
@@ -169,9 +181,9 @@
 
   {% include 'header.html' %}
 
-  <div class="floating-cart-button" id="floatingCart">
-    🛒 سلة التسوق <span id="cart-count">1</span>
-  </div>
+  <a href="/cart/" id="cartFloat" class="cart-float">
+    🛒 سلة التسوق <span id="cartCount" class="cart-count">1</span>
+  </a>
 
   <section class="hero">
     <h2>
@@ -230,26 +242,21 @@
       setTimeout(() => toast.remove(), 5300);
     }
 
-    function showFloatingCart(count) {
-      const cartBtn = document.getElementById("floatingCart");
-      const cartCount = document.getElementById("cart-count");
-      cartCount.textContent = count;
-      cartBtn.style.display = "block";
+    function showCartFloat(count = 1) {
+      const floatBtn = document.getElementById("cartFloat");
+      const countSpan = document.getElementById("cartCount");
+      countSpan.textContent = count;
+      floatBtn.classList.add("show");
 
       setTimeout(() => {
-        cartBtn.style.opacity = "1";
-      }, 100);
-
-      setTimeout(() => {
-        cartBtn.style.opacity = "0";
-        setTimeout(() => cartBtn.style.display = "none", 1000);
+        floatBtn.classList.remove("show");
       }, 10000);
     }
 
     document.querySelectorAll('.add-to-cart').forEach(button => {
       button.addEventListener('click', function(e) {
         e.preventDefault();
-        const url = this.dataset.url;
+        const url = this.getAttribute('data-url');
 
         fetch(url, {
           method: 'POST',
@@ -261,7 +268,7 @@
         .then(res => res.json())
         .then(data => {
           showToast(`✅ ${data.message}`);
-          showFloatingCart(data.cart_count || 1);  // عدد المنتجات في السلة
+          showCartFloat(data.cart_count || 1);
         })
         .catch(err => console.error("خطأ:", err));
       });

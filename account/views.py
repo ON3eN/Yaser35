@@ -2,18 +2,21 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Profile  # إذا كنت تستخدم موديل Profile
+from django.contrib.auth.decorators import login_required
+from .models import Profile  # تأكد أن Profile معرف لديك
 
 def login_view(request):
     """
-    عرض ومعالجة تسجيل الدخول.
+    عرض ومعالجة تسجيل الدخول باستخدام اسم المستخدم أو البريد.
     """
     if request.method == 'POST':
         username_or_email = request.POST.get('username')
         password = request.POST.get('password')
 
+        # محاولة تسجيل الدخول باسم المستخدم
         user = authenticate(request, username=username_or_email, password=password)
 
+        # إذا فشل، نحاول تسجيل الدخول بالبريد الإلكتروني
         if user is None:
             try:
                 user_obj = User.objects.get(email=username_or_email)
@@ -61,10 +64,26 @@ def register_view(request):
 
         try:
             Profile.objects.create(user=user, phone=f"{country_code}{phone_number}")
-        except:
-            pass
+        except Exception as e:
+            print(f"خطأ في إنشاء الملف الشخصي: {e}")
 
         messages.success(request, "تم إنشاء الحساب بنجاح، يمكنك تسجيل الدخول الآن.")
         return redirect('account:login')
 
     return render(request, 'account/register.html')
+
+
+@login_required
+def account_settings(request):
+    """
+    عرض صفحة إعدادات الحساب.
+    """
+    return render(request, 'account/settings.html')
+
+
+@login_required
+def payment_settings(request):
+    """
+    عرض صفحة إعدادات الدفع (صيانة حالياً).
+    """
+    return render(request, 'account/payment_settings.html')

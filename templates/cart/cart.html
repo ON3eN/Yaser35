@@ -55,6 +55,11 @@
       font-size: 1.2rem;
       cursor: pointer;
       z-index: 10;
+      transition: transform 0.2s ease;
+    }
+
+    .delete-btn:hover {
+      transform: scale(1.2);
     }
 
     .cart-details {
@@ -89,6 +94,11 @@
       height: 30px;
       font-size: 1rem;
       cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .qty-btn:hover {
+      transform: scale(1.2);
     }
 
     .price-line {
@@ -129,6 +139,11 @@
       border-radius: 10px;
       font-size: 1rem;
       cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .coupon-section button:hover {
+      transform: scale(1.05);
     }
 
     .actions {
@@ -147,6 +162,11 @@
       text-decoration: none;
       font-weight: bold;
       font-size: 1.1rem;
+      transition: transform 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
     }
 
     .modal-overlay {
@@ -198,7 +218,7 @@
   {% if cart_items %}
     {% for item in cart_items %}
       <div class="cart-item">
-        <!-- زر الحذف فوق الصورة -->
+        <!-- زر الحذف -->
         <form method="post" action="{% url 'cart:remove_from_cart' item.id %}">{% csrf_token %}
           <button type="submit" class="delete-btn">×</button>
         </form>
@@ -248,7 +268,7 @@
   {% endif %}
 </div>
 
-<!-- تنبيه تسجيل الدخول -->
+<!-- نافذة تنبيه تسجيل الدخول -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal-content">
     <h3>يجب تسجيل الدخول لإتمام الشراء.</h3>

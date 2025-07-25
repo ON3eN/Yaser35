@@ -16,7 +16,7 @@
 
     .container {
       padding: 1rem;
-      max-width: 1000px;
+      max-width: 1200px;
       margin: auto;
     }
 
@@ -40,8 +40,14 @@
       box-shadow: 0 3px 12px rgba(0,0,0,0.06);
       overflow: hidden;
       position: relative;
-      width: calc(50% - 0.5rem);
-      min-width: 280px;
+      width: calc(33.33% - 1rem);
+      min-width: 270px;
+    }
+
+    @media (max-width: 900px) {
+      .cart-item {
+        width: calc(50% - 1rem);
+      }
     }
 
     @media (max-width: 600px) {
@@ -111,7 +117,12 @@
       transition: transform 0.2s ease;
     }
 
-    .qty-btn:hover {
+    .qty-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .qty-btn:hover:not(:disabled) {
       transform: scale(1.2);
     }
 
@@ -263,7 +274,7 @@
               <h3>{{ item.name }}</h3>
               <div class="qty-controls-inline">
                 <form method="post" action="{% url 'cart:decrease_quantity' item.id %}">{% csrf_token %}
-                  <button type="submit" class="qty-btn">-</button>
+                  <button type="submit" class="qty-btn" {% if item.quantity == 1 %}disabled{% endif %}>-</button>
                 </form>
                 <span>{{ item.quantity }}</span>
                 <form method="post" action="{% url 'cart:increase_quantity' item.id %}">{% csrf_token %}

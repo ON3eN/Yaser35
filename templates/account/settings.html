@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -15,7 +16,7 @@
 
     .container {
       max-width: 600px;
-      margin: 4rem auto;
+      margin: 5rem auto;
       background: white;
       border-radius: 12px;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
@@ -35,7 +36,10 @@
       font-weight: 600;
     }
 
-    input[type="text"], input[type="email"], input[type="password"], input[type="file"] {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="file"] {
       width: 100%;
       padding: 0.6rem;
       border: 1px solid #ccc;
@@ -64,10 +68,13 @@
 </head>
 <body>
 
+  {% include 'header.html' %}
+
   <div class="container">
     <h2>⚙️ إعدادات الحساب</h2>
     <form method="POST" enctype="multipart/form-data">
       {% csrf_token %}
+      
       <label for="avatar">تغيير صورة الحساب:</label>
       <input type="file" name="avatar" id="avatar">
 
@@ -86,6 +93,8 @@
       <button type="submit">💾 حفظ التعديلات</button>
     </form>
   </div>
+
+  {% include 'footer.html' %}
 
 </body>
 </html>

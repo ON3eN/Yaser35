@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -9,11 +10,19 @@
     body {
       font-family: 'Cairo', sans-serif;
       background: linear-gradient(to bottom right, #d8f0ff, #ffffff);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      flex-grow: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      margin: 0;
+      padding: 2rem;
     }
 
     .message-box {
@@ -38,10 +47,16 @@
 </head>
 <body>
 
-  <div class="message-box">
-    <h2>🚧 إعدادات الدفع</h2>
-    <p>نحن نقوم حالياً بصيانة إعدادات الدفع، الرجاء العودة لاحقاً.</p>
-  </div>
+  {% include 'header.html' %}
+
+  <main>
+    <div class="message-box">
+      <h2>🚧 إعدادات الدفع</h2>
+      <p>نقوم حالياً بإجراء صيانة لإعدادات الدفع، يرجى العودة لاحقاً.</p>
+    </div>
+  </main>
+
+  {% include 'footer.html' %}
 
 </body>
 </html>

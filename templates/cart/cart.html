@@ -1,3 +1,4 @@
+<!-- templates/cart.html -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -32,38 +33,51 @@
       box-shadow: 0 3px 12px rgba(0,0,0,0.06);
       margin-bottom: 1.5rem;
       overflow: hidden;
+      position: relative;
     }
 
     .cart-img {
       width: 100%;
-      height: 200px;
+      height: 170px;
       object-fit: cover;
-      border-bottom: 1px solid #ddd;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #e63946;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 10;
     }
 
     .cart-details {
       padding: 1rem;
     }
 
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
     .cart-details h3 {
-      margin: 0 0 0.8rem;
+      margin: 0;
       font-size: 1.1rem;
       color: #003249;
     }
 
-    .price-line {
+    .qty-controls-inline {
       display: flex;
-      justify-content: space-between;
-      font-size: 0.95rem;
-      margin: 0.3rem 0;
-    }
-
-    .qty-controls {
-      display: flex;
-      justify-content: center;
       align-items: center;
-      gap: 1rem;
-      margin-top: 1rem;
+      gap: 0.5rem;
     }
 
     .qty-btn {
@@ -71,23 +85,17 @@
       color: white;
       border: none;
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      font-size: 1.2rem;
+      width: 30px;
+      height: 30px;
+      font-size: 1rem;
       cursor: pointer;
     }
 
-    .delete-btn {
-      display: block;
-      background: #e63946;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      font-size: 1.3rem;
-      margin: 1rem auto 0;
-      cursor: pointer;
+    .price-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+      margin: 0.5rem 0;
     }
 
     .summary {
@@ -190,26 +198,29 @@
   {% if cart_items %}
     {% for item in cart_items %}
       <div class="cart-item">
+        <!-- زر الحذف فوق الصورة -->
+        <form method="post" action="{% url 'cart:remove_from_cart' item.id %}">{% csrf_token %}
+          <button type="submit" class="delete-btn">×</button>
+        </form>
+
         <img src="{{ item.image_url|default:'/static/images/placeholder.png' }}" class="cart-img" alt="صورة المنتج">
+
         <div class="cart-details">
-          <h3>{{ item.name }}</h3>
+          <div class="top-row">
+            <h3>{{ item.name }}</h3>
+            <div class="qty-controls-inline">
+              <form method="post" action="{% url 'cart:decrease_quantity' item.id %}">{% csrf_token %}
+                <button type="submit" class="qty-btn">-</button>
+              </form>
+              <span>{{ item.quantity }}</span>
+              <form method="post" action="{% url 'cart:increase_quantity' item.id %}">{% csrf_token %}
+                <button type="submit" class="qty-btn">+</button>
+              </form>
+            </div>
+          </div>
 
           <div class="price-line"><span>السعر:</span><span>{{ item.price }} ريال</span></div>
           <div class="price-line"><span>المجموع:</span><span>{{ item.subtotal }} ريال</span></div>
-
-          <div class="qty-controls">
-            <form method="post" action="{% url 'cart:decrease_quantity' item.id %}">{% csrf_token %}
-              <button type="submit" class="qty-btn">-</button>
-            </form>
-            <span>{{ item.quantity }}</span>
-            <form method="post" action="{% url 'cart:increase_quantity' item.id %}">{% csrf_token %}
-              <button type="submit" class="qty-btn">+</button>
-            </form>
-          </div>
-
-          <form method="post" action="{% url 'cart:remove_from_cart' item.id %}">{% csrf_token %}
-            <button type="submit" class="delete-btn">×</button>
-          </form>
         </div>
       </div>
     {% endfor %}

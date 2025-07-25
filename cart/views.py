@@ -1,3 +1,5 @@
+# cart/views.py
+
 from django.shortcuts import render, redirect, get_object_or_404
 from store.models import Product
 from django.contrib import messages
@@ -13,6 +15,12 @@ def cart_view(request):
     for item in cart_items:
         item['quantity'] = item.get('quantity', 1)
         item['subtotal'] = round(item['price'] * item['quantity'], 2)
+        if 'image_url' not in item or not item['image_url']:
+            try:
+                product = Product.objects.get(id=item['id'])
+                item['image_url'] = product.image.url if product.image else ''
+            except Product.DoesNotExist:
+                item['image_url'] = ''
 
     total = sum(item['subtotal'] for item in cart_items)
     discounted_total = round(total * (1 - discount), 2)
@@ -25,7 +33,7 @@ def cart_view(request):
     })
 
 
-# إضافة منتج إلى السلة
+# إضافة منتج إلى السلة (عادي)
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart_items = request.session.get('cart_items', [])
@@ -40,7 +48,7 @@ def add_to_cart(request, product_id):
             'name': product.name,
             'price': float(product.price),
             'quantity': 1,
-            'image_url': product.image.url if product.image else "",  # <== صورة المنتج
+            'image_url': product.image.url if product.image else "",
         })
 
     request.session['cart_items'] = cart_items
@@ -48,7 +56,7 @@ def add_to_cart(request, product_id):
     return redirect(request.META.get('HTTP_REFERER', 'cart:cart'))
 
 
-# Ajax لإضافة منتج إلى السلة
+# ✅ إضافة منتج باستخدام Ajax (لا يعيد تحميل الصفحة)
 @require_POST
 def ajax_add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -64,7 +72,7 @@ def ajax_add_to_cart(request, product_id):
             'name': product.name,
             'price': float(product.price),
             'quantity': 1,
-            'image_url': product.image.url if product.image else "",  # <== صورة المنتج
+            'image_url': product.image.url if product.image else "",
         })
 
     request.session['cart_items'] = cart_items

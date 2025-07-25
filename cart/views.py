@@ -25,7 +25,7 @@ def cart_view(request):
     })
 
 
-# إضافة منتج إلى السلة (عادي)
+# إضافة منتج إلى السلة
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart_items = request.session.get('cart_items', [])
@@ -40,6 +40,7 @@ def add_to_cart(request, product_id):
             'name': product.name,
             'price': float(product.price),
             'quantity': 1,
+            'image_url': product.image.url if product.image else "",  # <== صورة المنتج
         })
 
     request.session['cart_items'] = cart_items
@@ -47,7 +48,7 @@ def add_to_cart(request, product_id):
     return redirect(request.META.get('HTTP_REFERER', 'cart:cart'))
 
 
-# ✅ إضافة منتج باستخدام Ajax (لا يعيد تحميل الصفحة)
+# Ajax لإضافة منتج إلى السلة
 @require_POST
 def ajax_add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -63,6 +64,7 @@ def ajax_add_to_cart(request, product_id):
             'name': product.name,
             'price': float(product.price),
             'quantity': 1,
+            'image_url': product.image.url if product.image else "",  # <== صورة المنتج
         })
 
     request.session['cart_items'] = cart_items

@@ -1,4 +1,3 @@
-<!-- templates/cart.html -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -16,29 +15,30 @@
 
     .container {
       padding: 1rem;
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
     }
 
     h1 {
-      color: #004e75;
       text-align: center;
+      font-size: 1.8rem;
+      color: #004e75;
       margin-bottom: 1.5rem;
-      font-size: 1.7rem;
     }
 
     .cart-item {
       background: white;
-      border-radius: 18px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      border-radius: 16px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
       margin-bottom: 1.5rem;
       overflow: hidden;
     }
 
     .cart-img {
       width: 100%;
-      height: 180px;
+      height: 200px;
       object-fit: cover;
+      border-bottom: 1px solid #ddd;
     }
 
     .cart-details {
@@ -46,8 +46,8 @@
     }
 
     .cart-details h3 {
+      margin: 0 0 0.8rem;
       font-size: 1.1rem;
-      margin: 0 0 0.6rem;
       color: #003249;
     }
 
@@ -78,6 +78,7 @@
     }
 
     .delete-btn {
+      display: block;
       background: #e63946;
       color: white;
       border: none;
@@ -86,7 +87,6 @@
       height: 40px;
       font-size: 1.3rem;
       margin: 1rem auto 0;
-      display: block;
       cursor: pointer;
     }
 
@@ -94,10 +94,9 @@
       background: white;
       border-radius: 14px;
       padding: 1rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      font-size: 1.1rem;
-      margin-top: 2rem;
       text-align: center;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
     .coupon-section {
@@ -191,21 +190,12 @@
   {% if cart_items %}
     {% for item in cart_items %}
       <div class="cart-item">
-        <!-- صورة المنتج -->
         <img src="{{ item.image_url|default:'/static/images/placeholder.png' }}" class="cart-img" alt="صورة المنتج">
-
         <div class="cart-details">
           <h3>{{ item.name }}</h3>
 
-          <div class="price-line">
-            <span>السعر:</span>
-            <span>{{ item.price }} ريال</span>
-          </div>
-
-          <div class="price-line">
-            <span>المجموع:</span>
-            <span>{{ item.subtotal }} ريال</span>
-          </div>
+          <div class="price-line"><span>السعر:</span><span>{{ item.price }} ريال</span></div>
+          <div class="price-line"><span>المجموع:</span><span>{{ item.subtotal }} ريال</span></div>
 
           <div class="qty-controls">
             <form method="post" action="{% url 'cart:decrease_quantity' item.id %}">{% csrf_token %}
@@ -228,8 +218,7 @@
       <strong>الإجمالي: {{ total }} ريال</strong>
     </div>
 
-    <form class="coupon-section" method="post" action="{% url 'cart:apply_coupon' %}">
-      {% csrf_token %}
+    <form class="coupon-section" method="post" action="{% url 'cart:apply_coupon' %}">{% csrf_token %}
       <input type="text" name="coupon_code" placeholder="أدخل كود الخصم">
       <button type="submit">تطبيق</button>
     </form>
@@ -263,12 +252,9 @@
   function showLoginModal() {
     document.getElementById('loginModal').style.display = 'flex';
   }
-
   window.addEventListener('click', function(e) {
     const modal = document.getElementById('loginModal');
-    if (e.target === modal) {
-      modal.style.display = 'none';
-    }
+    if (e.target === modal) modal.style.display = 'none';
   });
 </script>
 

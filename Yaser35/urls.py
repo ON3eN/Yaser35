@@ -7,19 +7,21 @@ from django.conf.urls.static import static
 from store.views import home  # عرض الصفحة الرئيسية
 
 urlpatterns = [
-    # 🔧 لوحة التحكم
+    # 🔧 لوحة تحكم المدير
     path('admin/', admin.site.urls),
 
     # 🏠 الصفحة الرئيسية
     path('', home, name='home'),
 
-    # 🛍️ روابط التطبيقات
-    path('store/', include(('store.urls', 'store'), namespace='store')),     # المنتجات
-    path('cart/', include(('cart.urls', 'cart'), namespace='cart')),         # السلة
-    path('order/', include(('order.urls', 'order'), namespace='order')),     # الطلبات
+    # 🛒 روابط التطبيقات
+    path('store/', include(('store.urls', 'store'), namespace='store')),       # المنتجات
+    path('cart/', include(('cart.urls', 'cart'), namespace='cart')),           # سلة التسوق
+    path('order/', include(('order.urls', 'order'), namespace='order')),       # الطلبات
     path('account/', include(('account.urls', 'account'), namespace='account')),  # الحسابات
 ]
 
-# 🖼️ دعم تحميل ملفات media أثناء التطوير
+# 🖼️ دعم ملفات الوسائط (Media) أثناء التطوير فقط
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# ✅ دعم ملفات static في الإنتاج (مثل Render) غير مطلوب هنا لأنه يتم إعدادها في settings.py و collectstatic

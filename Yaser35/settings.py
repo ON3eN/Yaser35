@@ -2,6 +2,7 @@ from pathlib import Path
 import cloudinary
 from decouple import config, Csv
 import os
+from django.conf import settings
 
 # المسار الأساسي
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -133,3 +134,8 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # نوع المفتاح الافتراضي
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ⚠️ إظهار ملفات static في وضع الإنتاج (مثلاً على Render)
+if not DEBUG:
+    from django.contrib.staticfiles.storage import StaticFilesStorage
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'

@@ -87,32 +87,66 @@
       padding: 2rem;
     }
 
-    #cart-float-button {
+    /* زر السلة العائم بنفس شكل الهوم */
+    .cart-float {
       position: fixed;
       bottom: 20px;
       left: 20px;
       background: #0077b6;
       color: white;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 0.8rem 1.8rem 0.8rem 3.2rem;
       border-radius: 50px;
-      padding: 0.6rem 1.2rem;
-      font-family: 'Cairo', sans-serif;
-      font-weight: bold;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      text-decoration: none;
       display: none;
       align-items: center;
-      gap: 0.5rem;
+      justify-content: center;
+      gap: 0.6rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      transition: all 0.4s ease;
       z-index: 9999;
     }
 
+    .cart-float.show {
+      display: flex;
+      animation: bounceIn 0.5s ease;
+    }
+
+    .cart-float .cart-count {
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      background: #0d47a1;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: bold;
+      padding: 0.3rem 0.75rem;
+      border-radius: 50px;
+      box-shadow: 0 0 0 4px #ffffff;
+    }
+
     @keyframes bounceIn {
-      0% { transform: translateY(50px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
   </style>
 </head>
 <body>
 
   {% include 'header.html' %}
+
+  <!-- زر السلة العائم -->
+  <a href="{% url 'cart:cart' %}" id="cartFloat" class="cart-float">
+    🛒 سلة التسوق
+    <span id="cartCount" class="cart-count">1</span>
+  </a>
 
   <section class="products" id="products">
     {% for product in products %}
@@ -134,8 +168,6 @@
     {% endfor %}
   </section>
 
-  <a href="/cart/" id="cart-float-button">سلة التسوق 🛒 <span id="cart-count">0</span></a>
-
   {% include 'footer.html' %}
 
   <script>
@@ -151,23 +183,14 @@
       return '';
     }
 
-    function updateCartAnimation() {
-      const cartBtn = document.getElementById('cart-float-button');
-      let countSpan = document.getElementById('cart-count');
-      let current = parseInt(countSpan.innerText) || 0;
-      countSpan.innerText = current + 1;
-
-      cartBtn.style.display = 'flex';
-      cartBtn.style.animation = 'bounceIn 0.5s ease';
+    function showCartFloat(count = 1) {
+      const floatBtn = document.getElementById("cartFloat");
+      const countSpan = document.getElementById("cartCount");
+      countSpan.textContent = count;
+      floatBtn.classList.add("show");
 
       setTimeout(() => {
-        cartBtn.style.opacity = '0';
-        cartBtn.style.transition = 'opacity 0.5s ease';
-      }, 9500);
-
-      setTimeout(() => {
-        cartBtn.style.display = 'none';
-        cartBtn.style.opacity = '1';
+        floatBtn.classList.remove("show");
       }, 10000);
     }
 
@@ -185,7 +208,7 @@
         })
         .then(response => response.json())
         .then(data => {
-          updateCartAnimation();
+          showCartFloat(data.cartCount || 1);
         })
         .catch(error => {
           console.error("خطأ في الإضافة:", error);

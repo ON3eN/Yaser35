@@ -1,3 +1,5 @@
+# cart/views.py
+
 from django.shortcuts import render, redirect, get_object_or_404
 from store.models import Product
 from django.contrib import messages
@@ -51,7 +53,7 @@ def add_to_cart(request, product_id):
 
     request.session['cart_items'] = cart_items
     messages.success(request, f"✅ تمت إضافة {product.name} إلى السلة 🛒")
-    return redirect(request.META.get('HTTP_REFERER', 'cart:cart_detail'))
+    return redirect(request.META.get('HTTP_REFERER', 'cart:cart'))
 
 # ✅ إضافة منتج باستخدام Ajax
 @require_POST
@@ -87,7 +89,7 @@ def increase_quantity(request, product_id):
             item['quantity'] += 1
             break
     request.session['cart_items'] = cart_items
-    return redirect('cart:cart_detail')
+    return redirect('cart:cart')
 
 # ✅ تقليل الكمية مع تنبيه المستخدم
 def decrease_quantity(request, product_id):
@@ -100,7 +102,7 @@ def decrease_quantity(request, product_id):
                 messages.warning(request, "📌 إذا كنت تريد حذف المنتج، اضغط على علامة الحذف الحمراء.")
             break
     request.session['cart_items'] = cart_items
-    return redirect('cart:cart_detail')
+    return redirect('cart:cart')
 
 # ✅ إزالة منتج من السلة
 def remove_from_cart(request, product_id):
@@ -108,14 +110,14 @@ def remove_from_cart(request, product_id):
     cart_items = [item for item in cart_items if item['id'] != product_id]
     request.session['cart_items'] = cart_items
     messages.info(request, "🗑️ تمت إزالة المنتج من السلة")
-    return redirect('cart:cart_detail')
+    return redirect('cart:cart')
 
 # ✅ تفريغ السلة
 def clear_cart(request):
     request.session['cart_items'] = []
     request.session['discount'] = 0
     messages.info(request, "🧺 تم تفريغ السلة بنجاح")
-    return redirect('cart:cart_detail')
+    return redirect('cart:cart')
 
 # ✅ تطبيق كود الخصم
 @require_POST
@@ -129,4 +131,4 @@ def apply_coupon(request):
         request.session['discount'] = 0
         messages.warning(request, "❌ كود الخصم غير صالح")
 
-    return redirect('cart:cart_detail')
+    return redirect('cart:cart')

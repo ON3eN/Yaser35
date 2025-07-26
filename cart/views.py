@@ -3,14 +3,15 @@ from store.models import Product
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from .models import CartItem
+from .models import Cart, CartItem
 
 # ✅ عرض السلة
 def cart_view(request):
     cart_items = []
 
     if request.user.is_authenticated:
-        items = CartItem.objects.filter(user=request.user)
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        items = cart.items.all()
         for item in items:
             cart_items.append({
                 'id': item.product.id,
@@ -42,7 +43,8 @@ def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     if request.user.is_authenticated:
-        cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
         if not created:
             cart_item.quantity += 1
         cart_item.save()
@@ -71,11 +73,12 @@ def ajax_add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     if request.user.is_authenticated:
-        cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
         if not created:
             cart_item.quantity += 1
         cart_item.save()
-        count = CartItem.objects.filter(user=request.user).count()
+        count = CartItem.objects.filter(cart=cart).count()
     else:
         cart_items = request.session.get('cart_items', [])
         for item in cart_items:
@@ -101,10 +104,12 @@ def ajax_add_to_cart(request, product_id):
 # ✅ زيادة الكمية
 def increase_quantity(request, product_id):
     if request.user.is_authenticated:
-        item = CartItem.objects.filter(user=request.user, product_id=product_id).first()
-        if item:
-            item.quantity += 1
-            item.save()
+        cart = Cart.objects.filter(user=request.user).first()
+        if cart:
+            item = CartItem.objects.filter(cart=cart, product_id=product_id).first()
+            if item:
+                item.quantity += 1
+                item.save()
     else:
         cart_items = request.session.get('cart_items', [])
         for item in cart_items:
@@ -118,13 +123,15 @@ def increase_quantity(request, product_id):
 # ✅ تقليل الكمية
 def decrease_quantity(request, product_id):
     if request.user.is_authenticated:
-        item = CartItem.objects.filter(user=request.user, product_id=product_id).first()
-        if item:
-            if item.quantity > 1:
-                item.quantity -= 1
-                item.save()
-            else:
-                messages.warning(request, "📌 إذا كنت تريد حذف المنتج، اضغط على علامة الحذف الحمراء.")
+        cart = Cart.objects.filter(user=request.user).first()
+        if cart:
+            item = CartItem.objects.filter(cart=cart, product_id=product_id).first()
+            if item:
+                if item.quantity > 1:
+                    item.quantity -= 1
+                    item.save()
+                else:
+                    messages.warning(request, "📌 إذا كنت تريد حذف المنتج، اضغط على علامة الحذف الحمراء.")
     else:
         cart_items = request.session.get('cart_items', [])
         for item in cart_items:
@@ -141,7 +148,9 @@ def decrease_quantity(request, product_id):
 # ✅ إزالة منتج
 def remove_from_cart(request, product_id):
     if request.user.is_authenticated:
-        CartItem.objects.filter(user=request.user, product_id=product_id).delete()
+        cart = Cart.objects.filter(user=request.user).first()
+        if cart:
+            CartItem.objects.filter(cart=cart, product_id=product_id).delete()
     else:
         cart_items = request.session.get('cart_items', [])
         cart_items = [item for item in cart_items if item['id'] != product_id]
@@ -153,7 +162,9 @@ def remove_from_cart(request, product_id):
 # ✅ تفريغ السلة
 def clear_cart(request):
     if request.user.is_authenticated:
-        CartItem.objects.filter(user=request.user).delete()
+        cart = Cart.objects.filter(user=request.user).first()
+        if cart:
+            CartItem.objects.filter(cart=cart).delete()
     request.session['cart_items'] = []
     request.session['discount'] = 0
     messages.info(request, "🧺 تم تفريغ السلة بنجاح")

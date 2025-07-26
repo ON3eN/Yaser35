@@ -109,23 +109,25 @@
       background-color: #003d63;
     }
 
-    /* زر السلة العائم (مُعدل لأسفل اليسار) */
+    /* زر السلة العائم المطابق للتصميم */
     .cart-float {
       position: fixed;
       bottom: 20px;
       left: 20px;
       background: #0077b6;
       color: white;
-      padding: 0.6rem 1.2rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 0.8rem 1.8rem 0.8rem 3.2rem;
       border-radius: 50px;
-      font-weight: bold;
       text-decoration: none;
       display: none;
       align-items: center;
+      justify-content: center;
       gap: 0.6rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      z-index: 9999;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
       transition: all 0.4s ease;
+      z-index: 9999;
     }
 
     .cart-float.show {
@@ -133,12 +135,17 @@
       animation: slideIn 0.4s ease;
     }
 
-    .cart-count {
-      background: #ffcb05;
-      color: #000;
-      padding: 0.2rem 0.6rem;
-      border-radius: 999px;
+    .cart-float .cart-count {
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      background: #0d47a1;
+      color: white;
       font-size: 0.9rem;
+      font-weight: bold;
+      padding: 0.3rem 0.75rem;
+      border-radius: 50px;
+      box-shadow: 0 0 0 4px #ffffff;
     }
 
     @keyframes slideIn {
@@ -157,9 +164,10 @@
 
   {% include 'header.html' %}
 
-  <!-- زر السلة العائم -->
+  <!-- زر السلة العائم بالتنسيق الجديد -->
   <a href="{% url 'cart:cart' %}" id="cartFloat" class="cart-float">
-    🛒 سلة التسوق <span id="cartCount" class="cart-count">1</span>
+    🛒 سلة التسوق
+    <span id="cartCount" class="cart-count">1</span>
   </a>
 
   <section class="hero">

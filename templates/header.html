@@ -1,4 +1,3 @@
-<!-- templates/header.html -->
 <header style="
   background: linear-gradient(to right, #c2e9fb, #e0f7ff);
   padding: 1rem 1.5rem;
@@ -9,6 +8,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   position: relative;
   z-index: 1000;
+  direction: rtl;
 ">
 
   <!-- يمين: قائمة الهمبرغر -->
@@ -83,31 +83,6 @@
   </div>
 </header>
 
-<!-- زر سلة التسوق العائم -->
-<a href="{% url 'cart:cart' %}" id="cartFloat" class="cart-float" style="
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  background: #0077b6;
-  color: white;
-  padding: 0.6rem 1.1rem;
-  border-radius: 50px;
-  display: none;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: bold;
-  text-decoration: none;
-  z-index: 2000;
-">
-  🛒 سلة التسوق <span id="cartCount" class="cart-count" style="
-    background: #ffcb05;
-    color: black;
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-    font-size: 0.9rem;
-  ">0</span>
-</a>
-
 <!-- قائمة منبثقة -->
 <style>
   .popup-menu {
@@ -152,18 +127,9 @@
 
   .popup-menu a { color: #0d47a1; }
   .popup-menu button { color: #c62828; }
-
-  @media (max-width: 600px) {
-    header {
-      flex-direction: row-reverse;
-    }
-
-    .header-logo {
-      font-size: 1.4rem;
-    }
-  }
 </style>
 
+<!-- سكربت -->
 <script>
   function toggleUserMenu() {
     const menu = document.getElementById("userMenu");
@@ -185,21 +151,4 @@
       if (navMenu) navMenu.style.display = "none";
     }
   });
-
-  function showCartFloat(count = 1) {
-    const floatBtn = document.getElementById("cartFloat");
-    const countSpan = document.getElementById("cartCount");
-    countSpan.textContent = count;
-    floatBtn.style.display = "flex";
-
-    setTimeout(() => {
-      floatBtn.style.opacity = "0";
-      floatBtn.style.transition = "opacity 0.5s ease";
-    }, 9500);
-
-    setTimeout(() => {
-      floatBtn.style.display = "none";
-      floatBtn.style.opacity = "1";
-    }, 10000);
-  }
 </script>

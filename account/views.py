@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import Profile
-from cart.models import CartItem  # لإدارة السلة من قاعدة البيانات
+from cart.models import Cart, CartItem  # ✅ تم استيراد Cart لتحديث تحميل السلة
 
 def login_view(request):
     """
@@ -28,9 +28,10 @@ def login_view(request):
         if user is not None:
             login(request, user)
 
-            # تحميل السلة من قاعدة البيانات إلى session
+            # ✅ تحميل سلة المستخدم الحالية من قاعدة البيانات إلى session
+            cart, created = Cart.objects.get_or_create(user=user)
             cart_items = []
-            for item in CartItem.objects.filter(user=user):
+            for item in cart.items.all():  # باستخدام related_name='items' في CartItem
                 cart_items.append({
                     'id': item.product.id,
                     'name': item.product.name,
@@ -42,7 +43,7 @@ def login_view(request):
 
             return redirect(next_url)
         else:
-            # إعادة التوجيه إلى نفس الصفحة بدون عرض رسائل
+            # إعادة التوجيه لنفس الصفحة بدون رسائل
             return redirect(f"{request.path}?next={next_url}")
 
     return render(request, 'account/login.html', {'next': next_url})

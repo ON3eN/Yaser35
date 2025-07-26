@@ -301,7 +301,7 @@
 <div class="modal-overlay" id="loginModal">
   <div class="modal-content">
     <h3>يجب تسجيل الدخول لإتمام الشراء.</h3>
-    <a href="{% url 'account:login' %}">تسجيل الدخول</a>
+    <a href="{% url 'account:login' %}?next={% url 'order:checkout' %}">تسجيل الدخول</a>
     <a href="{% url 'account:register' %}">إنشاء حساب</a>
   </div>
 </div>

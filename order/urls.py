@@ -1,5 +1,6 @@
 # order/urls.py
 
+# مسارات الطلبات - تطبيق order
 from django.urls import path
 from . import views
 

@@ -1,3 +1,5 @@
+# order/views.py
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -5,14 +7,14 @@ from django.core.mail import send_mail
 from django.conf import settings
 from store.models import Product
 from .models import Order
-from cart.models import CartItem  # ⬅️ مهم لحذف السلة من قاعدة البيانات
+from cart.models import CartItem
 
 @login_required
 def checkout_view(request):
     cart = request.session.get('cart_items', [])
 
     if not cart:
-        messages.error(request, "السلة فارغة")
+        messages.error(request, "سلة التسوق فارغة، لا يمكن إتمام الطلب.")
         return redirect('cart:cart')
 
     if request.method == 'POST':
@@ -33,7 +35,6 @@ def checkout_view(request):
                 price = product.price * quantity
                 total_price += price
 
-                # حفظ الطلب
                 Order.objects.create(
                     user=request.user,
                     product=product,
@@ -47,18 +48,14 @@ def checkout_view(request):
                 )
 
                 order_details.append(f"• {product.name} × {quantity} = {price:.2f} ريال")
-
             except Product.DoesNotExist:
                 continue
 
-        # ✅ حذف السلة من session وقاعدة البيانات
+        # حذف السلة من الجلسة وقاعدة البيانات
         request.session['cart_items'] = []
         CartItem.objects.filter(user=request.user).delete()
 
-        # إشعار المستخدم
-        messages.success(request, "تم تأكيد طلبك بنجاح!")
-
-        # --- رسالة للمستخدم ---
+        # إرسال رسالة للمستخدم
         user_message = f"""
 مرحبًا {request.user.username} 👋،
 
@@ -77,7 +74,6 @@ def checkout_view(request):
 
 شكراً لاختيارك شقف! 💙
 """
-
         send_mail(
             subject="✔️ تم تأكيد طلبك - شقف",
             message=user_message,
@@ -86,32 +82,23 @@ def checkout_view(request):
             fail_silently=False
         )
 
-        # --- رسالة لصاحب المتجر ---
+        # إرسال رسالة لصاحب المتجر
         admin_message = f"""
 🛍️ طلب جديد من {request.user.username}
 
-📧 البريد الإلكتروني:
-{request.user.email}
+📧 البريد الإلكتروني: {request.user.email}
+📱 رقم الجوال: {phone}
+🏠 العنوان: {address}
 
-📱 رقم الجوال:
-{phone}
-
-🏠 عنوان التوصيل:
-{address}
-
-📍 رابط الموقع:
+📍 الموقع على الخريطة:
 https://www.google.com/maps?q={latitude},{longitude}
 
 📦 تفاصيل الطلب:
 {chr(10).join(order_details)}
 
-💳 طريقة الدفع:
-{payment}
-
-💰 المجموع الكلي:
-{total_price:.2f} ريال
+💳 الدفع: {payment}
+💰 الإجمالي: {total_price:.2f} ريال
 """
-
         send_mail(
             subject="📬 طلب جديد - إشعار من شقف",
             message=admin_message,
@@ -120,6 +107,7 @@ https://www.google.com/maps?q={latitude},{longitude}
             fail_silently=False
         )
 
+        messages.success(request, "✅ تم تأكيد طلبك بنجاح!")
         return redirect('home')
 
-    return render(request, 'checkout.html')
+    return render(request, 'order/checkout.html')

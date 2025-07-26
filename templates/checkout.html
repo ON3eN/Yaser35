@@ -1,4 +1,3 @@
-<!-- استبدل الكود في checkout.html بالكامل بهذا -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -112,19 +111,19 @@
     }
 
     .custom-alert-content {
-      background: white;
+      background: #ffecec;
       padding: 2rem;
       border-radius: 16px;
       text-align: center;
       box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       width: 90%;
       max-width: 400px;
+      color: #c62828;
     }
 
     .custom-alert-content h3 {
       margin-bottom: 2rem;
       font-size: 1.2rem;
-      color: #333;
     }
 
     .custom-buttons {
@@ -156,8 +155,8 @@
       transition: width 0.2s linear;
     }
 
-    .cancel-btn {
-      background: #aaa;
+    .cancel-btn, .close-btn {
+      background: #c62828;
       color: white;
       padding: 0.8rem 2rem;
       border: none;
@@ -203,7 +202,7 @@
       <label for="visa">Visa 💳</label>
 
       <input type="radio" name="payment" value="paypal" id="paypal">
-      <label for="paypal">PayPal 🧾</label>
+      <label for="paypal">PayPal 📟</label>
     </div>
 
     <button type="submit" class="submit-btn">تأكيد الطلب</button>
@@ -212,14 +211,8 @@
 
 <div class="custom-alert" id="customAlert">
   <div class="custom-alert-content">
-    <h3>هل أنت متأكد أنك تريد تأكيد الطلب؟</h3>
-    <div class="custom-buttons">
-      <button type="button" class="send-btn" id="sendConfirmBtn">
-        إرسال
-        <div class="progress" id="progressBar"></div>
-      </button>
-      <button type="button" class="cancel-btn" onclick="hideAlert()">تعديل</button>
-    </div>
+    <h3>يرجى تعبئة جميع الحقول واختيار طريقة الدفع</h3>
+    <button type="button" class="close-btn" onclick="hideAlert()">متابعة</button>
   </div>
 </div>
 
@@ -263,35 +256,13 @@
     const payment = document.querySelector('input[name="payment"]:checked');
 
     if (!name || !phone || !address || !payment) {
-      alert("يرجى تعبئة جميع الحقول واختيار طريقة الدفع.");
       e.preventDefault();
-      return;
+      alertBox.style.display = 'flex';
     }
-
-    e.preventDefault();
-    showAlert();
   });
-
-  function showAlert() {
-    alertBox.style.display = 'flex';
-    progressBar.style.width = '0%';
-    let seconds = 7;
-    let width = 0;
-    countdownInterval = setInterval(() => {
-      width += 100 / 7;
-      progressBar.style.width = width + "%";
-      seconds--;
-      if (seconds <= 0) {
-        clearInterval(countdownInterval);
-        form.submit();
-      }
-    }, 1000);
-  }
 
   function hideAlert() {
     alertBox.style.display = 'none';
-    clearInterval(countdownInterval);
-    progressBar.style.width = '0%';
   }
 </script>
 

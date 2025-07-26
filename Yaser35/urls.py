@@ -1,3 +1,5 @@
+# Yaser35/urls.py
+
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -15,9 +17,9 @@ urlpatterns = [
     path('store/', include(('store.urls', 'store'), namespace='store')),     # المنتجات
     path('cart/', include(('cart.urls', 'cart'), namespace='cart')),         # السلة
     path('order/', include(('order.urls', 'order'), namespace='order')),     # الطلبات
-    path('account/', include('account.urls')),                               # الحساب (تسجيل الدخول والتسجيل والخروج)
+    path('account/', include(('account.urls', 'account'), namespace='account')),  # الحسابات
 ]
 
-# 🖼️ دعم ملفات media أثناء التطوير
+# 🖼️ دعم تحميل ملفات media أثناء التطوير
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

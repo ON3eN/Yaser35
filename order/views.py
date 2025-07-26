@@ -5,6 +5,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from store.models import Product
 from .models import Order
+from cart.models import CartItem  # ⬅️ مهم لحذف السلة من قاعدة البيانات
 
 @login_required
 def checkout_view(request):
@@ -37,7 +38,12 @@ def checkout_view(request):
                     user=request.user,
                     product=product,
                     quantity=quantity,
-                    # أضف المزيد من الحقول إذا لزم الأمر
+                    full_name=full_name,
+                    phone=phone,
+                    address=address,
+                    latitude=latitude or None,
+                    longitude=longitude or None,
+                    payment_method=payment,
                 )
 
                 order_details.append(f"• {product.name} × {quantity} = {price:.2f} ريال")
@@ -45,8 +51,9 @@ def checkout_view(request):
             except Product.DoesNotExist:
                 continue
 
-        # تفريغ السلة
+        # ✅ حذف السلة من session وقاعدة البيانات
         request.session['cart_items'] = []
+        CartItem.objects.filter(user=request.user).delete()
 
         # إشعار المستخدم
         messages.success(request, "تم تأكيد طلبك بنجاح!")
@@ -79,7 +86,7 @@ def checkout_view(request):
             fail_silently=False
         )
 
-        # --- رسالة لصاحب المتجر بشكل منسق ---
+        # --- رسالة لصاحب المتجر ---
         admin_message = f"""
 🛍️ طلب جديد من {request.user.username}
 

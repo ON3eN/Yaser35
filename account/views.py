@@ -3,7 +3,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Profile  # تأكد أن Profile معرف لديك
+from .models import Profile
+from cart.models import CartItem  # ⬅️ ضروري لإدارة السلة من قاعدة البيانات
 
 def login_view(request):
     """
@@ -27,6 +28,19 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, f"مرحباً بك يا {user.first_name or user.username}!")
+
+            # ✅ تحميل السلة من قاعدة البيانات إلى session
+            cart_items = []
+            for item in CartItem.objects.filter(user=user):
+                cart_items.append({
+                    'id': item.product.id,
+                    'name': item.product.name,
+                    'price': float(item.product.price),
+                    'quantity': item.quantity,
+                    'image_url': item.product.image.url if item.product.image else '',
+                })
+            request.session['cart_items'] = cart_items
+
             return redirect('home')
         else:
             messages.error(request, "اسم المستخدم أو كلمة المرور غير صحيحة.")

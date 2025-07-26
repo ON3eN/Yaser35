@@ -1,8 +1,7 @@
 from pathlib import Path
 import cloudinary
-from decouple import config, Csv
+from decouple import config
 import os
-from django.conf import settings
 
 # المسار الأساسي
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,6 +36,7 @@ INSTALLED_APPS = [
 # الميدلوير
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ ضروري للإنتاج
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -106,6 +106,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# ✅ ضروري لتفعيل WhiteNoise في الإنتاج
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # الملفات الإعلامية
 MEDIA_URL = '/media/'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
@@ -134,8 +137,3 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # نوع المفتاح الافتراضي
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# ⚠️ إظهار ملفات static في وضع الإنتاج (مثلاً على Render)
-if not DEBUG:
-    from django.contrib.staticfiles.storage import StaticFilesStorage
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'

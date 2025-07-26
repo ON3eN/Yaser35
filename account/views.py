@@ -5,16 +5,16 @@ from django.contrib.auth.decorators import login_required
 from .models import Profile
 from cart.models import CartItem  # لإدارة السلة من قاعدة البيانات
 
-
 def login_view(request):
     """
     تسجيل الدخول باستخدام اسم المستخدم أو البريد الإلكتروني.
     يعيد التوجيه إلى الصفحة السابقة إن وُجدت، أو إلى الصفحة الرئيسية.
     """
+    next_url = request.GET.get('next') or request.POST.get('next') or 'home'
+
     if request.method == 'POST':
         username_or_email = request.POST.get('username')
         password = request.POST.get('password')
-        next_url = request.GET.get('next') or request.POST.get('next')
 
         user = authenticate(request, username=username_or_email, password=password)
 
@@ -28,7 +28,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
 
-            # تحميل عناصر السلة من قاعدة البيانات إلى session
+            # تحميل السلة من قاعدة البيانات إلى session
             cart_items = []
             for item in CartItem.objects.filter(user=user):
                 cart_items.append({
@@ -40,12 +40,11 @@ def login_view(request):
                 })
             request.session['cart_items'] = cart_items
 
-            return redirect(next_url or 'home')
+            return redirect(next_url)
         else:
-            return redirect('account:login')
+            # إعادة التوجيه إلى نفس الصفحة بدون عرض رسائل
+            return redirect(f"{request.path}?next={next_url}")
 
-    # عند الدخول GET فقط
-    next_url = request.GET.get('next', '')
     return render(request, 'account/login.html', {'next': next_url})
 
 
